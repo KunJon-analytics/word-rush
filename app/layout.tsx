@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 
 import { Providers } from "@/components/providers";
 import { fontHeading, fontSans, fontUrban } from "@/assets/fonts";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/toaster";
-import Script from "next/script";
 
 import "@/styles/globals.css";
 

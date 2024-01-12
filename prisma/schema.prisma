@@ -1,0 +1,153 @@
+//if we need full reset :  npx prisma db push --force-reset
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+/// A `Word Rush` player
+model User {
+    /// `uuid`: the unique user id returned by Pi platform API
+    uuid        String @id
+    /// `accessToken`: the access token returned by Pi platform API after authentication
+    accessToken String
+    /// `username`: the pi network username of the player
+    username    String @unique
+
+    /// `email`: the player's email 
+    email               String? @unique
+    /// `onboardingEmailSent`: has onboard email been sent? 
+    onboardingEmailSent Boolean @default(false)
+
+    /// `points`: player's points accrued for active ecosystem participation 
+    points      Float @default(0)
+    /// `points`: amount of tokens owned by player
+    tokens      Int   @default(0)
+    /// `gamesPlayed`: number of games played
+    gamesPlayed Int   @default(0)
+
+    /// `referrer`: id of player's referrer
+    referrer     String?
+    /// `referralCode`: unique referral code of player
+    referralCode String  @unique
+
+    /// `roundsWon`: game rounds won by player
+    roundsWon    HuntRound[]
+    /// `activities`: games attempted by player
+    activities   HunterActivity[]
+    /// `transactions`: payments made player
+    transactions PiTransaction[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([referrer])
+}
+
+/// A `Word Rush` Game Round
+model HuntRound {
+    /// `id`: the id of the round
+    id          String     @id @default(uuid())
+    /// `word`: the word to be found
+    word        String
+    /// `noOfPlayers`: the number of players in this round
+    noOfPlayers Int        @default(0)
+    /// `stage`: the stage of the round
+    stage       RoundStage @default(STARTED)
+
+    /// `winner`: the winner of the round
+    winner   User?   @relation(fields: [winnerId], references: [uuid])
+    /// `winnerId`: the uuid of the round winner
+    winnerId String?
+
+    /// `activities`: players round attempt
+    activities HunterActivity[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([winnerId])
+}
+
+/// A `Word Rush` Game Player activity
+model HunterActivity {
+    /// `id`: the id of the player session
+    id    String @id @default(uuid())
+    /// `tries`: the number of hidden word guesses 
+    tries Int    @default(0)
+
+    /// `hunter`: the player
+    hunter   User   @relation(fields: [hunterId], references: [uuid])
+    /// `hunterId`: the uuid of the player
+    hunterId String
+
+    /// `round`: the hunt round
+    round   HuntRound @relation(fields: [roundId], references: [id])
+    /// `roundId`: the id of the hunt round
+    roundId String
+
+    /// `guesses`: words attempted during this activity
+    guesses ActivityGuess[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([hunterId, roundId])
+    @@index([hunterId])
+    @@index([roundId])
+}
+
+/// A `Word Rush` Game Player activity attempt
+model ActivityGuess {
+    /// `id`: the id of the activity guess
+    id    String @id @default(uuid())
+    /// `guess`: the word guessed
+    guess String
+
+    /// `color`: a comma delimeter sequence of wordle colors
+    color String
+
+    /// `activity`: the hunt activity where word was guessed
+    activity   HunterActivity @relation(fields: [activityId], references: [id])
+    /// `activityId`: the id of the hunt activity where word was guessed
+    activityId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([activityId])
+}
+
+model PiTransaction {
+    amount     Float
+    txId       String?
+    paymentId  String            @unique
+    isRefunded Boolean           @default(false)
+    type       PiTransactionType @default(BUY_COINS)
+    purposeId  String
+
+    payer   User   @relation(fields: [payerId], references: [uuid])
+    payerId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([payerId])
+}
+
+enum PiTransactionType {
+    CLAIM_REWARD
+    REFUND
+    BUY_COINS
+}
+
+enum RoundStage {
+    STARTED
+    FINISHED
+    CLAIMED
+}

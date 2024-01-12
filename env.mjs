@@ -5,7 +5,8 @@ export const env = createEnv({
   server: {
     // This is optional because it's only used in development.
     // See https://next-auth.js.org/deployment.
-    // DATABASE_URL: z.string().min(1),
+    DATABASE_URL: z.string().min(1),
+    DIRECT_URL: z.string().min(1),
     // RESEND_API_KEY: z.string().min(1),
     // TEST_EMAIL_ADDRESS: z.string().min(1),
     COOKIE_PASSWORD: z.string().min(1),
@@ -19,7 +20,8 @@ export const env = createEnv({
     NEXT_PUBLIC_PI_SANDBOX: z.string().min(1),
   },
   runtimeEnv: {
-    // DATABASE_URL: process.env.DATABASE_URL,
+    DATABASE_URL: process.env.DATABASE_URL,
+    DIRECT_URL: process.env.DIRECT_URL,
     // RESEND_API_KEY: process.env.RESEND_API_KEY,
     // TEST_EMAIL_ADDRESS: process.env.TEST_EMAIL_ADDRESS,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
