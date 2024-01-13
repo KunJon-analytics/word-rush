@@ -15,9 +15,9 @@ export default async function DashboardLayout({
 }: DashboardLayoutProps) {
   const session = await getSession();
 
-  // if (!session.isLoggedIn) {
-  //   return notFound();
-  // }
+  if (!session.isLoggedIn) {
+    return notFound();
+  }
 
   const user = getSessionUser(session);
 
