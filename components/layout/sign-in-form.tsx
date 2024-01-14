@@ -24,12 +24,12 @@ export default function SignInForm({
       className={cn("grid items-start gap-4", className)}
       action={async () => {
         try {
-          // const authResult: AuthResult = await window.Pi.authenticate(
-          //   scopes,
-          //   onIncompletePaymentFound
-          // );
-          // await login(authResult);
-          router.push("/dashboard/play");
+          const authResult: AuthResult = await window.Pi.authenticate(
+            scopes,
+            onIncompletePaymentFound
+          );
+          await login(authResult);
+          router.push(`/dashboard/rounds/${1}/play`);
           // toast message
           toast({
             title: "Success",

@@ -34,7 +34,7 @@ model User {
     /// `referrer`: id of player's referrer
     referrer     String?
     /// `referralCode`: unique referral code of player
-    referralCode String  @unique
+    referralCode String  @unique @default(uuid())
 
     /// `roundsWon`: game rounds won by player
     roundsWon    HuntRound[]

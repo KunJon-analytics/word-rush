@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { SessionData, sessionOptions } from "@/lib/session";
 import { AuthResult } from "@/types";
 import platformAPIClient from "@/lib/platformAPIClient";
+import prisma from "@/lib/prisma";
 
 export async function getSession() {
   const session = await getIronSession<SessionData>(cookies(), sessionOptions);
@@ -41,6 +42,18 @@ export async function login(auth: AuthResult) {
   session.isLoggedIn = true;
   session.accessToken = auth.accessToken;
   session.uuid = auth.user.uid;
+  await prisma.user.upsert({
+    where: { uuid: auth.user.uid },
+    // select: { uid: true, username: true },
+    update: {
+      accessToken: auth.accessToken,
+    },
+    create: {
+      uuid: auth.user.uid,
+      username: auth.user.username,
+      accessToken: auth.accessToken,
+    },
+  });
   await session.save();
   revalidatePath("/", "layout");
 }

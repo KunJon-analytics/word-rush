@@ -198,3 +198,14 @@
     border-color: #333;
   }
 }
+
+/* app-preloader */
+.app-preloader .app-preloader-inner::after,
+.app-preloader .app-preloader-inner::before {
+  @apply absolute h-full w-full rounded-full content-[''];
+  animation: spinner-grow 3s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+}
+
+.app-preloader .app-preloader-inner::after {
+  animation-delay: -1.5s;
+}
