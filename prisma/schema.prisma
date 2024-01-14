@@ -52,13 +52,11 @@ model User {
 /// A `Word Rush` Game Round
 model HuntRound {
     /// `id`: the id of the round
-    id          String     @id @default(uuid())
+    id    String     @id @default(uuid())
     /// `word`: the word to be found
-    word        String
-    /// `noOfPlayers`: the number of players in this round
-    noOfPlayers Int        @default(0)
+    word  String
     /// `stage`: the stage of the round
-    stage       RoundStage @default(STARTED)
+    stage RoundStage @default(STARTED)
 
     /// `winner`: the winner of the round
     winner   User?   @relation(fields: [winnerId], references: [uuid])
@@ -77,9 +75,7 @@ model HuntRound {
 /// A `Word Rush` Game Player activity
 model HunterActivity {
     /// `id`: the id of the player session
-    id    String @id @default(uuid())
-    /// `tries`: the number of hidden word guesses 
-    tries Int    @default(0)
+    id String @id @default(uuid())
 
     /// `hunter`: the player
     hunter   User   @relation(fields: [hunterId], references: [uuid])
@@ -97,7 +93,7 @@ model HunterActivity {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@unique([hunterId, roundId])
+    @@unique(name: "activityId", [hunterId, roundId])
     @@index([hunterId])
     @@index([roundId])
 }
@@ -105,9 +101,13 @@ model HunterActivity {
 /// A `Word Rush` Game Player activity attempt
 model ActivityGuess {
     /// `id`: the id of the activity guess
-    id    String @id @default(uuid())
+    id        String  @id @default(uuid())
+    /// `index`: the index of the word guessed
+    index     Int
     /// `guess`: the word guessed
-    guess String
+    guess     String
+    /// `isCorrect`: if the word guessed was correct
+    isCorrect Boolean @default(false)
 
     /// `color`: a comma delimeter sequence of wordle colors
     color String

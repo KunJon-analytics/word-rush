@@ -3,6 +3,7 @@ import { IronSession } from "iron-session";
 
 import { Icons } from "@/components/shared/icons";
 import { SessionData } from "@/lib/session";
+import { ActivityGuess, Prisma } from "@prisma/client";
 
 declare global {
   interface Window {
@@ -107,3 +108,61 @@ export type PropertyConfig = {
   mainNav: MainNavItem[];
   sidebarNav: SidebarNavItem[];
 };
+
+export type WordleColor = "grey" | "yellow" | "green";
+
+export type FormattedGuess = {
+  key: string;
+  color: string;
+};
+
+export type UsedKeys = {
+  [k: string]: string;
+};
+
+export type FormatGuessInput = {
+  color: string;
+  guess: string;
+};
+
+export type FormatGuess = (input: ActivityGuess) => FormattedGuess[];
+
+export type GetUsedKeys = (input: (FormattedGuess[] | undefined)[]) => UsedKeys;
+
+export type FormatGuesses = (
+  input: ActivityGuess[]
+) => (FormattedGuess[] | undefined)[];
+
+export type AddNewGuessInput = FormatGuessInput & {
+  formattedGuess: FormattedGuess[];
+  guesses: (FormattedGuess[] | undefined)[];
+  turn: number;
+  usedKeys: UsedKeys;
+  history: string[];
+};
+
+export type AddNewGuessOutput = {
+  isCorrect: boolean;
+  turn: number;
+  guesses: (FormattedGuess[] | undefined)[];
+  usedkeys: UsedKeys;
+  history: string[];
+};
+
+export type AddNewGuess = (input: AddNewGuessInput) => AddNewGuessOutput;
+
+export type GameReturnType = Prisma.HunterActivityGetPayload<{
+  include: {
+    guesses: true;
+    round: {
+      select: {
+        _count: true;
+        createdAt: true;
+        id: true;
+        stage: true;
+        updatedAt: true;
+        winner: { select: { username: true } };
+      };
+    };
+  };
+}>;
