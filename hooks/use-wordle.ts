@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 import { useToast } from "@/components/ui/use-toast";
@@ -8,13 +9,15 @@ import {
   GetUsedKeys,
   UsedKeys,
 } from "@/types";
+import { play } from "@/actions/wordle";
 
 const useWordle = (round: GameReturnType) => {
-  const turn = round.guesses.length;
   const [currentGuess, setCurrentGuess] = useState("");
-  const history = round.guesses.map((guess) => guess.guess);
-
   const { toast } = useToast();
+  const router = useRouter();
+
+  const turn = round.guesses.length;
+  const history = round.guesses.map((guess) => guess.guess);
 
   // format a guess into an array of letter objects
   // e.g. [{key: 'a', color: 'yellow'}]
@@ -70,8 +73,10 @@ const useWordle = (round: GameReturnType) => {
   const usedKeys = getUsedKeys(guesses);
 
   // send current guess
-  const addNewGuess = (guess: string) => {
+  const addNewGuess = async (guess: string) => {
+    await play(round.roundId, guess);
     setCurrentGuess("");
+    router.refresh();
   };
 
   // handle keyup event & track current guess

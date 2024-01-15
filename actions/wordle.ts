@@ -4,8 +4,9 @@ import { promises as fs } from "fs";
 
 import prisma from "@/lib/prisma";
 import { getSession } from "./session";
-import { notFound } from "next/navigation";
 import { GameReturnType } from "@/types";
+import { getWordColor } from "@/lib/wordle";
+import { inngest } from "@/inngest/client";
 
 export const getRandomWord = async () => {
   try {
@@ -82,3 +83,80 @@ export const getRoundData = async (roundId: string) => {
     throw new Error("Internal Error");
   }
 };
+
+export async function play(roundId: string, guess: string) {
+  try {
+    const session = await getSession();
+    if (!session.isLoggedIn) {
+      throw new Error("Unauthorized");
+    }
+
+    const currentGuess = guess.toLowerCase();
+
+    if (currentGuess.length !== 5) {
+      throw new Error("Word must be 5 chars!");
+    }
+
+    const hunterActivity = await prisma.hunterActivity.findUnique({
+      where: { activityId: { hunterId: session.uuid, roundId } },
+      include: { guesses: true, round: true },
+    });
+
+    if (!hunterActivity) {
+      throw new Error("No Game Round");
+    }
+
+    const history = hunterActivity.guesses.map((guess) => guess.guess);
+
+    if (history.length > 6) {
+      throw new Error("You used all your guesses!");
+    }
+
+    const solution = hunterActivity.round.word.toLowerCase();
+
+    if (history.includes(solution)) {
+      throw new Error("You already completed this round");
+    }
+
+    if (history.includes(currentGuess)) {
+      throw new Error("You already tried that word!");
+    }
+
+    const isCorrect = currentGuess === solution;
+
+    const color = getWordColor(currentGuess, solution);
+
+    // add guess and connect to activity
+    await prisma.activityGuess.create({
+      data: {
+        guess: currentGuess,
+        index: hunterActivity.guesses.length,
+        activityId: hunterActivity.id,
+        isCorrect,
+        color,
+      },
+    });
+
+    // (event) add point for activity, add logic for iscorrect and only finished games eligible
+
+    // if is correct and game is started add player as winner
+    if (isCorrect && hunterActivity.round.stage === "STARTED") {
+      const updatedRound = await prisma.huntRound.update({
+        where: { id: roundId },
+        data: { stage: "FINISHED", winnerId: session.uuid },
+      });
+      // (event) send mail to winner and check for queued, change to started, add winner point
+      // Send your event payload to Inngest
+      await inngest.send({
+        name: "rounds/round.completed",
+        data: {
+          roundId: updatedRound.id,
+        },
+        user: { uuid: session.uuid },
+      });
+    }
+  } catch (error) {
+    console.log("[PLAY_GAME]", error);
+    throw new Error("Internal Error");
+  }
+}
