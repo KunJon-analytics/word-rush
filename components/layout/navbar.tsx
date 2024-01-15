@@ -39,7 +39,7 @@ export function NavBar({
           {rightElements}
 
           {user.isLoggedIn ? (
-            <UserAccountNav user={user} />
+            <UserAccountNav user={user} action={action} />
           ) : (
             <SignInModal action={action} />
           )}

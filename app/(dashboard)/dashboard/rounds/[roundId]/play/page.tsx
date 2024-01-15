@@ -1,12 +1,18 @@
 import React from "react";
 
 import Wordle from "@/components/play/Wordle";
-import { fakeRound } from "@/lib/wordle";
+import { getRoundData } from "@/actions/wordle";
 
-const PlayPage = () => {
+interface Props {
+  params: { roundId: string };
+}
+
+const PlayPage = async ({ params: { roundId } }: Props) => {
+  const wordleData = await getRoundData(roundId);
+
   return (
     <div>
-      <Wordle wordleData={fakeRound} />
+      <Wordle wordleData={wordleData} />
     </div>
   );
 };

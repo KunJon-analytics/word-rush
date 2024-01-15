@@ -29,44 +29,6 @@ export const letters = [
   "Z",
 ];
 
-export const fakeRound: GameReturnType = {
-  createdAt: new Date(),
-  id: "bbgvyvvv",
-  updatedAt: new Date(),
-  guesses: [
-    {
-      activityId: "activityId",
-      color: "grey,yellow,grey,grey,green",
-      createdAt: new Date(),
-      guess: "tyoiy",
-      id: "id",
-      index: 0,
-      isCorrect: false,
-      updatedAt: new Date(),
-    },
-    {
-      activityId: "activityId2",
-      color: "yellow,green,green,green,green",
-      createdAt: new Date(),
-      guess: "lerry",
-      id: "id",
-      index: 1,
-      isCorrect: false,
-      updatedAt: new Date(),
-    },
-  ],
-  hunterId: "hunterId",
-  round: {
-    _count: { activities: 1, winner: 0 },
-    createdAt: new Date(),
-    id: "Roundid",
-    stage: "STARTED",
-    updatedAt: new Date(),
-    winner: { username: "gshawn" },
-  },
-  roundId: "roundId",
-};
-
 export const getWordColor = (guess: string, solution: string) => {
   // "green,yellow,grey,green,yellow"
   let color = "";
