@@ -4,6 +4,7 @@ import { getSession } from "@/actions/session";
 import prisma from "@/lib/prisma";
 import { getWordColor } from "@/lib/wordle";
 import { GameReturnType } from "@/types";
+import { inngest } from "@/inngest/client";
 
 export async function POST(
   req: Request,
@@ -75,13 +76,23 @@ export async function POST(
       },
     });
 
+    // (event) add point for activity, add logic for iscorrect and only finished games eligible
+
     // if is correct and game is started add player as winner
     if (isCorrect && huntRound.stage === "STARTED") {
-      await prisma.huntRound.update({
+      const updatedRound = await prisma.huntRound.update({
         where: { id: huntRound.id },
         data: { stage: "FINISHED", winnerId: session.uuid },
       });
-      // send mail to winner
+      // (event) send mail to winner and check for queued, change to started, add winner point
+      // Send your event payload to Inngest
+      await inngest.send({
+        name: "rounds/round.completed",
+        data: {
+          roundId: updatedRound.id,
+        },
+        user: { uuid: session.uuid },
+      });
     }
 
     const activity: GameReturnType | null =

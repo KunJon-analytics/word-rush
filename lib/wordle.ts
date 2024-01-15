@@ -1,4 +1,4 @@
-import { FormatGuess, FormatGuesses, GameReturnType } from "@/types";
+import { GameReturnType } from "@/types";
 
 export const letters = [
   "A",
@@ -67,22 +67,6 @@ export const fakeRound: GameReturnType = {
   roundId: "roundId",
 };
 
-// format a guess color into an array of letter objects
-// e.g. [{key: 'a', color: 'yellow'}]
-export const formatGuess: FormatGuess = ({ color, guess }) => {
-  const colorArray = color.split(",");
-  let formattedGuess = guess.split("").map((l) => {
-    return { key: l, color: "" };
-  });
-
-  // make colors
-  formattedGuess.forEach((l, i) => {
-    formattedGuess[i].color = colorArray[i];
-  });
-
-  return formattedGuess;
-};
-
 export const getWordColor = (guess: string, solution: string) => {
   // "green,yellow,grey,green,yellow"
   let color = "";
@@ -106,10 +90,6 @@ export const getWordColor = (guess: string, solution: string) => {
   return color.slice(1);
 };
 
-export const formatGuesses: FormatGuesses = (input) => {
-  let formattedGuesses = [...Array(6)];
-  input.forEach((guess) => {
-    formattedGuesses[guess.index] = formatGuess(guess);
-  });
-  return formattedGuesses;
-};
+export const yearlySubscription = { pi: 1, tokens: 24 * 366 };
+
+export const pointsConfig = { winner: 5, success: 3, failed: 1, referral: 1 };

@@ -3,12 +3,14 @@ import Balancer from "react-wrap-balancer";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 import { SignInModal } from "@/components/layout/sign-in-modal";
 import { BusinessLine } from "@/components/home/businessline";
+import { getActiveRound } from "@/actions/wordle";
 
-export default function Home() {
+export default async function Home() {
+  const activeRound = await getActiveRound();
   return (
     <>
       <section className="space-y-6 pb-12 pt-16 lg:py-28">
@@ -50,7 +52,14 @@ export default function Home() {
             className="flex animate-fade-up justify-center space-x-2 opacity-0 md:space-x-4"
             style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}
           >
-            <SignInModal size={"lg"} />
+            {activeRound === "unauthenticated" ? (
+              <SignInModal size={"lg"} action={getActiveRound} />
+            ) : (
+              <Button asChild className="px-3" variant="default" size={"lg"}>
+                <Link href={`${activeRound}`}> Join the Challenge</Link>
+              </Button>
+            )}
+
             <Link
               href="https://minepi.com/gshawn"
               target="_blank"

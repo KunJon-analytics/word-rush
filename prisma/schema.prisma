@@ -126,9 +126,10 @@ model ActivityGuess {
 model PiTransaction {
     amount     Float
     txId       String?
-    paymentId  String            @unique
-    isRefunded Boolean           @default(false)
-    type       PiTransactionType @default(BUY_COINS)
+    paymentId  String              @unique
+    isRefunded Boolean             @default(false)
+    type       PiTransactionType   @default(BUY_COINS)
+    status     PiTransactionStatus @default(INITIALIZED)
     purposeId  String
 
     payer   User   @relation(fields: [payerId], references: [uuid])
@@ -146,8 +147,15 @@ enum PiTransactionType {
     BUY_COINS
 }
 
+enum PiTransactionStatus {
+    INITIALIZED
+    COMPLETED
+    CANCELLED
+}
+
 enum RoundStage {
     STARTED
     FINISHED
     CLAIMED
+    QUEUED
 }

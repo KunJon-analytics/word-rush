@@ -1,7 +1,7 @@
-import { SubscribeTx, PaymentDTO } from "@/types";
+import { PaymentDTO } from "@/types";
 import axiosClient, { config } from "./axios-client";
 
-export const onIncompletePaymentFound = (payment: PaymentDTO<SubscribeTx>) => {
+export const onIncompletePaymentFound = (payment: PaymentDTO<null>) => {
   console.log("onIncompletePaymentFound", payment);
   return axiosClient.post("/payments/incomplete", { payment });
 };
@@ -21,7 +21,7 @@ export const onCancel = (paymentId: string) => {
   return axiosClient.post("/payments/cancelled_payment", { paymentId });
 };
 
-export const onError = (error: Error, payment?: PaymentDTO<SubscribeTx>) => {
+export const onError = (error: Error, payment?: PaymentDTO<null>) => {
   console.error("onError", error);
   if (payment) {
     console.log(payment);

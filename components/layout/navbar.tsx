@@ -13,6 +13,7 @@ interface NavBarProps {
   children?: React.ReactNode;
   rightElements?: React.ReactNode;
   scroll?: boolean;
+  action: () => Promise<string>;
 }
 
 export function NavBar({
@@ -21,6 +22,7 @@ export function NavBar({
   children,
   rightElements,
   scroll = false,
+  action,
 }: NavBarProps) {
   const scrolled = useScroll(50);
 
@@ -36,7 +38,11 @@ export function NavBar({
         <div className="flex items-center space-x-3">
           {rightElements}
 
-          {user.isLoggedIn ? <UserAccountNav user={user} /> : <SignInModal />}
+          {user.isLoggedIn ? (
+            <UserAccountNav user={user} />
+          ) : (
+            <SignInModal action={action} />
+          )}
         </div>
       </div>
     </header>

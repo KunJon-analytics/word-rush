@@ -29,9 +29,10 @@ import SignInForm from "./sign-in-form";
 
 interface SignInModalProps {
   size?: "default" | "sm" | "lg" | "icon" | null;
+  action: () => Promise<string>;
 }
 
-export function SignInModal({ size = "sm" }: SignInModalProps) {
+export function SignInModal({ size = "sm", action }: SignInModalProps) {
   const [open, setOpen] = React.useState(false);
   const { isDesktop } = useMediaQuery();
 
@@ -55,7 +56,7 @@ export function SignInModal({ size = "sm" }: SignInModalProps) {
               first person to find a word.
             </DialogDescription>
           </DialogHeader>
-          <SignInForm />
+          <SignInForm action={action} />
         </DialogContent>
       </Dialog>
     );
@@ -80,7 +81,7 @@ export function SignInModal({ size = "sm" }: SignInModalProps) {
             person to find a word.
           </DrawerDescription>
         </DrawerHeader>
-        <SignInForm className="px-4" />
+        <SignInForm className="px-4" action={action} />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>

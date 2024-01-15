@@ -14,9 +14,11 @@ import FormButton from "../shared/form-button";
 
 const scopes = ["username", "payments", "wallet_address"];
 
-export default function SignInForm({
-  className,
-}: React.ComponentProps<"form">) {
+type SignInFormProps = {
+  action: () => Promise<string>;
+} & React.ComponentProps<"form">;
+
+export default function SignInForm({ className, action }: SignInFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   return (
@@ -29,7 +31,8 @@ export default function SignInForm({
             onIncompletePaymentFound
           );
           await login(authResult);
-          router.push(`/dashboard/rounds/${1}/play`);
+          const link = await action();
+          router.push(`${link}`);
           // toast message
           toast({
             title: "Success",
