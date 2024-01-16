@@ -42,7 +42,7 @@ export async function login(auth: AuthResult) {
   session.isLoggedIn = true;
   session.accessToken = auth.accessToken;
   session.uuid = auth.user.uid;
-  await prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: { uuid: auth.user.uid },
     // select: { uid: true, username: true },
     update: {
@@ -55,6 +55,7 @@ export async function login(auth: AuthResult) {
       points: 10,
     },
   });
+  session.points = user.points;
   await session.save();
   revalidatePath("/", "layout");
 }

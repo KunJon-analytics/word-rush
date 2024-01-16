@@ -7,6 +7,7 @@ export interface SessionData {
   isLoggedIn: boolean;
   uuid: string;
   accessToken: string;
+  points: number;
 }
 
 export const defaultSession: SessionData = {
@@ -14,6 +15,7 @@ export const defaultSession: SessionData = {
   isLoggedIn: false,
   uuid: "",
   accessToken: "",
+  points: 0,
 };
 
 export const sessionOptions: SessionOptions = {
