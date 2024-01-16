@@ -52,6 +52,7 @@ export async function login(auth: AuthResult) {
       uuid: auth.user.uid,
       username: auth.user.username,
       accessToken: auth.accessToken,
+      points: 10,
     },
   });
   await session.save();
