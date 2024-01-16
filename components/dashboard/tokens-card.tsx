@@ -1,7 +1,4 @@
-import { Gem } from "lucide-react";
-
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,10 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Subscribe from "../shared/subscribe";
+import { getSession } from "@/actions/session";
 
-type CardProps = React.ComponentProps<typeof Card> & { tokens: number };
+type CardProps = React.ComponentProps<typeof Card>;
 
-export function TokensCard({ className, tokens, ...props }: CardProps) {
+export async function TokensCard({ className, ...props }: CardProps) {
+  const { username: subscriber, tokens } = await getSession();
   return (
     <Card className={cn(className)} {...props}>
       <CardHeader>
@@ -24,9 +24,7 @@ export function TokensCard({ className, tokens, ...props }: CardProps) {
         <p className="text-sm font-medium leading-none">{tokens}</p>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">
-          <Gem className="mr-2 h-4 w-4" /> Get More Tokens
-        </Button>
+        <Subscribe subscriber={subscriber} />
       </CardFooter>
     </Card>
   );

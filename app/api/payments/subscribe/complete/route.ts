@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 import { getSession } from "@/actions/session";
 import prisma from "@/lib/prisma";
@@ -66,6 +67,10 @@ export async function POST(req: Request) {
       where: { paymentId, payerId: session.uuid },
       data: { status: "COMPLETED", txId: txid },
     });
+
+    session.tokens = session.tokens + yearlySubscription.tokens;
+    await session.save();
+    revalidatePath("/(dashboard)/", "layout");
 
     return new NextResponse(`Completed the payment ${paymentId}`, {
       status: 200,

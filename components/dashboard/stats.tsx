@@ -8,7 +8,7 @@ import { StatsCard } from "./stats-card";
 const Stats = ({ me }: { me: MeReturnType }) => {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5 lg:gap-6">
-      <TokensCard tokens={me.tokens} />
+      <TokensCard />
       <div className="grid grid-cols-1 gap-4 sm:col-span-2 sm:grid-cols-2 sm:gap-5 lg:gap-6">
         <StatsCard
           starColor="bg-green-600"

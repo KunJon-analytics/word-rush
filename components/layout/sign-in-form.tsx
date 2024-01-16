@@ -44,6 +44,7 @@ export default function SignInForm({ className, action }: SignInFormProps) {
           toast({
             title: "Uh oh! Something went wrong.",
             description: "There was a problem with your request.",
+            variant: "destructive",
           });
         }
       }}
