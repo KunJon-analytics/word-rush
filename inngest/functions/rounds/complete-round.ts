@@ -3,6 +3,7 @@ import { NonRetriableError } from "inngest";
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { pointsConfig } from "@/lib/wordle";
+import { increasePoints } from "../users/increase-points";
 
 export const completeRound = inngest.createFunction(
   { id: "complete-round" },
@@ -22,9 +23,6 @@ export const completeRound = inngest.createFunction(
           cause: `roundId: ${roundId}`,
         });
       }
-      if (!!round.winner?.email) {
-        // send email
-      }
       // check for queued tx
       const queuedRound = await prisma.huntRound.findFirst({
         where: { stage: "QUEUED" },
@@ -34,13 +32,17 @@ export const completeRound = inngest.createFunction(
           where: { id: queuedRound.id },
           data: { stage: "STARTED" },
         });
-        // maybe reload layout??
+      }
+      if (!!round.winner?.email) {
+        // send email
       }
       // update point change to event..
-      await prisma.user.update({
-        where: { uuid },
-        data: { points: { increment: pointsConfig.winner } },
+      const winner = await step.invoke("increase-user-points", {
+        function: increasePoints,
+        data: { increment: pointsConfig.winner },
+        user: { uuid },
       });
+      return { roundId: round.id, winner: winner.username };
     } catch (error) {
       throw new Error("Database error", {
         cause: error,

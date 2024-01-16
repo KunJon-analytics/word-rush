@@ -3,10 +3,10 @@
 import { promises as fs } from "fs";
 
 import prisma from "@/lib/prisma";
-import { getSession } from "./session";
 import { GameReturnType } from "@/types";
-import { getWordColor } from "@/lib/wordle";
+import { getWordColor, pointsConfig } from "@/lib/wordle";
 import { inngest } from "@/inngest/client";
+import { getSession } from "./session";
 
 export const getRandomWord = async () => {
   try {
@@ -137,8 +137,6 @@ export async function play(roundId: string, guess: string) {
       },
     });
 
-    // (event) add point for activity, add logic for iscorrect and only finished games eligible
-
     // if is correct and game is started add player as winner
     if (isCorrect && hunterActivity.round.stage === "STARTED") {
       const updatedRound = await prisma.huntRound.update({
@@ -151,6 +149,29 @@ export async function play(roundId: string, guess: string) {
         name: "rounds/round.completed",
         data: {
           roundId: updatedRound.id,
+        },
+        user: { uuid: session.uuid },
+      });
+    }
+
+    // (event) add point for activity, add logic for iscorrect and only finished games eligible
+    if (isCorrect) {
+      // send add point event
+      await inngest.send({
+        name: "users/point.increased",
+        data: {
+          increment: pointsConfig.success,
+        },
+        user: { uuid: session.uuid },
+      });
+    }
+
+    if (!isCorrect && history.length === 5) {
+      // send add point event
+      await inngest.send({
+        name: "users/point.increased",
+        data: {
+          increment: pointsConfig.failed,
         },
         user: { uuid: session.uuid },
       });

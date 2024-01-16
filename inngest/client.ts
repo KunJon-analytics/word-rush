@@ -9,8 +9,18 @@ type RoundComplete = {
   };
 };
 
+type IncreasePoints = {
+  data: {
+    increment: number;
+  };
+  user: {
+    uuid: string;
+  };
+};
+
 type Events = {
   "rounds/round.completed": RoundComplete;
+  "users/point.increased": IncreasePoints;
 };
 
 // Create a client to send and receive events
