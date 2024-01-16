@@ -13,6 +13,7 @@ import { play } from "@/actions/wordle";
 
 const useWordle = (round: GameReturnType) => {
   const [currentGuess, setCurrentGuess] = useState("");
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -74,9 +75,11 @@ const useWordle = (round: GameReturnType) => {
 
   // send current guess
   const addNewGuess = async (guess: string) => {
+    setLoading(true);
     await play(round.roundId, guess);
     setCurrentGuess("");
     router.refresh();
+    setLoading(false);
   };
 
   // handle keyup event & track current guess
@@ -138,6 +141,7 @@ const useWordle = (round: GameReturnType) => {
     usedKeys,
     history,
     handleClick,
+    loading,
   };
 };
 

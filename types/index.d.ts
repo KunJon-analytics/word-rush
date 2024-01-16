@@ -23,7 +23,7 @@ export type AuthResult = {
 
 export type User = AuthResult["user"];
 
-export type SubscribeTx = { subscriptionId: string };
+export type SubscribeTx = null;
 
 export interface PiCallbacks {
   onReadyForServerApproval: (paymentId: string) => void;

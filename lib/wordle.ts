@@ -52,6 +52,6 @@ export const getWordColor = (guess: string, solution: string) => {
   return color.slice(1);
 };
 
-export const yearlySubscription = { pi: 1, tokens: 24 * 366 };
+export const yearlySubscription = { pi: 1, tokens: 5000 };
 
 export const pointsConfig = { winner: 5, success: 3, failed: 1, referral: 1 };

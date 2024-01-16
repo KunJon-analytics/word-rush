@@ -5,7 +5,7 @@ import axios from "axios";
 
 import prisma from "@/lib/prisma";
 import platformAPIClient from "@/lib/platformAPIClient";
-import { PaymentDTO } from "@/types";
+import { PaymentDTO, SubscribeTx } from "@/types";
 import { yearlySubscription } from "@/lib/wordle";
 
 export const pi = new PiNetwork(
@@ -15,12 +15,15 @@ export const pi = new PiNetwork(
 
 export async function POST(req: Request) {
   try {
-    const { payment }: { payment: PaymentDTO<null> } = await req.json();
+    const { payment }: { payment: PaymentDTO<SubscribeTx> } = await req.json();
     const paymentId = payment.identifier;
     const txid = payment?.transaction?.txid as string;
     const txURL = payment?.transaction?._link as string;
     const uid = payment.user_uid;
-    const amount = payment.amount;
+
+    const currentPayment = await platformAPIClient.get<PaymentDTO<SubscribeTx>>(
+      `/v2/payments/${paymentId}`
+    );
 
     const piPayment = await prisma.piTransaction.findUnique({
       where: { paymentId, payerId: uid },
@@ -30,12 +33,6 @@ export async function POST(req: Request) {
     if (!piPayment) {
       console.log("[INCOMPLETE_PAYMENT]", "Payment not found");
       return new NextResponse("Payment not found", { status: 400 });
-    }
-
-    // payment already refunded
-    if (piPayment.isRefunded) {
-      console.log("[INCOMPLETE_PAYMENT]", "Payment already refunded");
-      return new NextResponse("Already refunded", { status: 400 });
     }
 
     // check the transaction on the Pi blockchain
@@ -52,22 +49,25 @@ export async function POST(req: Request) {
       return new NextResponse("Payment id doesn't match.", { status: 400 });
     }
 
+    // let Pi Servers know that the payment is completed
+    await platformAPIClient.post(`/v2/payments/${paymentId}/complete`, {
+      txid,
+    });
+
     // check if tx is still at INITIALIZED stage then add payer points if not only complete
-    if (piPayment.status === "INITIALIZED" && piPayment.amount === amount) {
+    if (
+      piPayment.status === "INITIALIZED" &&
+      piPayment.amount <= currentPayment.data.amount
+    ) {
       await prisma.user.update({
         where: { uuid: payment.user_uid },
-        data: { points: { increment: yearlySubscription.tokens } },
+        data: { tokens: { increment: yearlySubscription.tokens } },
       });
     }
 
     await prisma.piTransaction.update({
       where: { paymentId, payerId: uid },
-      data: { status: "COMPLETED" },
-    });
-
-    // let Pi Servers know that the payment is completed
-    await platformAPIClient.post(`/v2/payments/${paymentId}/complete`, {
-      txid,
+      data: { status: "COMPLETED", txId: txid },
     });
 
     return new NextResponse(`Handled the incomplete payment ${paymentId}`, {

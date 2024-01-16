@@ -112,6 +112,13 @@ export async function play(roundId: string, guess: string) {
       throw new Error("You used all your guesses!");
     }
 
+    const correctGuess = hunterActivity.guesses.find(
+      (guess) => guess.isCorrect
+    );
+    if (correctGuess) {
+      throw new Error("You already won this round");
+    }
+
     const solution = hunterActivity.round.word.toLowerCase();
 
     if (history.includes(solution)) {
