@@ -55,7 +55,7 @@ export async function login(auth: AuthResult) {
       points: 10,
     },
   });
-  session.points = user.points;
+  session.tokens = user.tokens;
   await session.save();
   revalidatePath("/", "layout");
 }

@@ -166,3 +166,10 @@ export type GameReturnType = Prisma.HunterActivityGetPayload<{
     };
   };
 }>;
+
+export type MeReturnType = Prisma.UserGetPayload<{
+  include: {
+    activities: { include: { guesses: true; round: true } };
+    _count: true;
+  };
+}>;
