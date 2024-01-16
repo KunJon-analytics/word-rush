@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-type CardProps = React.ComponentProps<typeof Card>;
+type CardProps = React.ComponentProps<typeof Card> & { tokens: number };
 
-export function TokensCard({ className, ...props }: CardProps) {
+export function TokensCard({ className, tokens, ...props }: CardProps) {
   return (
     <Card className={cn(className)} {...props}>
       <CardHeader>
@@ -21,7 +21,7 @@ export function TokensCard({ className, ...props }: CardProps) {
         <CardDescription>Tokens: Your Key to Challenges!</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <p className="text-sm font-medium leading-none">1000</p>
+        <p className="text-sm font-medium leading-none">{tokens}</p>
       </CardContent>
       <CardFooter>
         <Button className="w-full">
