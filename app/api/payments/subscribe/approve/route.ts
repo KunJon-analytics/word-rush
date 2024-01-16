@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       return new NextResponse("Active tx with payment ID", { status: 401 });
     }
 
-    if (currentPayment.data.amount !== yearlySubscription.pi) {
+    if (currentPayment.data.amount < yearlySubscription.pi) {
       console.log("APPROVE_SUBSCRIPTION", "wrong payment amount");
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
         purposeId: "",
         type: "BUY_COINS",
       },
-      where: { paymentId },
+      where: { paymentId, payerId: session.uuid },
       update: {},
     });
 

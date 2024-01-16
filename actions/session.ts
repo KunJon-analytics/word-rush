@@ -44,7 +44,6 @@ export async function login(auth: AuthResult) {
   session.uuid = auth.user.uid;
   const user = await prisma.user.upsert({
     where: { uuid: auth.user.uid },
-    // select: { uid: true, username: true },
     update: {
       accessToken: auth.accessToken,
     },
@@ -52,7 +51,7 @@ export async function login(auth: AuthResult) {
       uuid: auth.user.uid,
       username: auth.user.username,
       accessToken: auth.accessToken,
-      points: 10,
+      tokens: 10,
     },
   });
   session.tokens = user.tokens;
