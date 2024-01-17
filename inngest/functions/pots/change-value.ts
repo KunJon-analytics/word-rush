@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 
 export const changePotValue = inngest.createFunction(
-  { id: "complete-round" },
+  { id: "change-pot-value" },
   { event: "pots/value.change" },
   async ({ event }) => {
     // (event) change pot value

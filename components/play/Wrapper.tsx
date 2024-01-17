@@ -45,7 +45,7 @@ export async function Wrapper({
               stats={formatDistance(wordleData.createdAt, new Date(), {
                 addSuffix: true,
               })}
-              title="Created"
+              title="Hunt Start"
             />
           </div>
         </div>

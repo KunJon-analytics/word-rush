@@ -29,8 +29,3 @@ export const onError = (error: Error, payment?: PaymentDTO<null>) => {
     // handle the error accordingly
   }
 };
-
-export const pi = new PiNetwork(
-  process.env.PI_API_KEY as string,
-  process.env.PI_SECRET_KEY as string
-);

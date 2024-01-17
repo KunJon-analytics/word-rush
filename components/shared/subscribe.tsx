@@ -56,7 +56,7 @@ const Subscribe = ({ subscriber }: { subscriber: string }) => {
     }
   };
 
-  const callbacks: PiCallbacks = {
+  const callbacks: PiCallbacks<SubscribeTx> = {
     onCancel,
     onError,
     onReadyForServerApproval,

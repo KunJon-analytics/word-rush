@@ -2,8 +2,8 @@ import { NonRetriableError } from "inngest";
 
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
-import { pi } from "@/lib/pi";
 import { potsConfig } from "@/config/pot";
+import { pi } from "@/app/api/payments/incomplete/route";
 import { changePotValue } from "../pots/change-value";
 
 export const claimTokens = inngest.createFunction(

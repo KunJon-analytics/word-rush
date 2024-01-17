@@ -7,7 +7,7 @@ import { getRandomWord } from "@/actions/wordle";
 
 export const createRound = inngest.createFunction(
   { id: "round-create" },
-  { cron: "0-59/5 * * * *" },
+  { cron: "0 * * * *" },
   async ({ event, step }) => {
     try {
       const word = await getRandomWord();
