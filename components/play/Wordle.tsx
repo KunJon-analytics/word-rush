@@ -16,26 +16,13 @@ interface Props {
 export default function Wordle({ wordleData }: Props) {
   const { currentGuess, guesses, turn, handleClick, usedKeys, loading } =
     useWordle(wordleData);
-  const reward = "π5";
   const correctGuess = wordleData.guesses.find((guess) => guess.isCorrect);
   const dontShow = correctGuess || turn > 5 || loading;
   return (
     <section className="wordle" id="wordle">
-      <div className="wordle-bx">
-        <div>
-          <h2>{`Win ${reward}`}</h2>
-          <p>
-            {`Game title: ${wordleData.round.id}`}
-            <br></br>{" "}
-            {`Winner: ${wordleData.round.winner?.username || "No winner"}`}.
-          </p>
-          <>
-            <Grid guesses={guesses} currentGuess={currentGuess} turn={turn} />
-            {!dontShow && (
-              <Keypad handleClick={handleClick} usedKeys={usedKeys} />
-            )}
-          </>
-        </div>
+      <div className="wordle-bx mt-4">
+        <Grid guesses={guesses} currentGuess={currentGuess} turn={turn} />
+        {!dontShow && <Keypad handleClick={handleClick} usedKeys={usedKeys} />}
       </div>
     </section>
   );

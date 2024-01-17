@@ -7,6 +7,7 @@ import { GameReturnType } from "@/types";
 import { getWordColor, pointsConfig } from "@/lib/wordle";
 import { inngest } from "@/inngest/client";
 import { getSession } from "./session";
+import { revalidatePath } from "next/cache";
 
 export const getRandomWord = async () => {
   try {
@@ -183,6 +184,7 @@ export async function play(roundId: string, guess: string) {
         user: { uuid: session.uuid },
       });
     }
+    revalidatePath("/", "layout");
   } catch (error) {
     console.log("[PLAY_GAME]", error);
     throw new Error("Internal Error");

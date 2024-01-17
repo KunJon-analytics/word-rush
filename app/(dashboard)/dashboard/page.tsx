@@ -11,7 +11,7 @@ const DashboardPage = async () => {
     notFound();
   }
   return (
-    <main className=" grid grid-cols-1 place-content-start w-full px-10 pb-8">
+    <main className="grid grid-cols-1 place-content-start w-full px-10 pb-8">
       <div className="mt-4 grid grid-cols-12 gap-4 sm:mt-5 sm:gap-5 lg:mt-6 lg:gap-6">
         <div className="col-span-12 space-y-4 sm:space-y-5 lg:col-span-8 lg:space-y-6">
           <Stats me={me} />
