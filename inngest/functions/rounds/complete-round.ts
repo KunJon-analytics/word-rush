@@ -3,7 +3,7 @@ import { NonRetriableError } from "inngest";
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { pointsConfig } from "@/lib/wordle";
-import { increasePoints } from "../users/increase-points";
+import { changePoints } from "../users/change-points";
 
 export const completeRound = inngest.createFunction(
   { id: "complete-round" },
@@ -38,7 +38,7 @@ export const completeRound = inngest.createFunction(
       }
       // update point change to event..
       const winner = await step.invoke("increase-user-points", {
-        function: increasePoints,
+        function: changePoints,
         data: { increment: pointsConfig.winner },
         user: { uuid },
       });

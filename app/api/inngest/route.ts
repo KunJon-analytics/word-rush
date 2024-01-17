@@ -3,7 +3,9 @@ import { serve } from "inngest/next";
 import { inngest } from "@/inngest/client";
 import { createRound } from "@/inngest/functions/rounds/create-round";
 import { completeRound } from "@/inngest/functions/rounds/complete-round";
-import { increasePoints } from "@/inngest/functions/users/increase-points";
+import { changePoints } from "@/inngest/functions/users/change-points";
+import { claimTokens } from "@/inngest/functions/users/claim-tokens";
+import { changePotValue } from "@/inngest/functions/pots/change-value";
 
 // Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
@@ -12,6 +14,8 @@ export const { GET, POST, PUT } = serve({
     /* your functions will be passed here later! */
     createRound,
     completeRound,
-    increasePoints,
+    changePoints,
+    claimTokens,
+    changePotValue,
   ],
 });

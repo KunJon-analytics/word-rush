@@ -141,6 +141,18 @@ model PiTransaction {
     @@index([payerId])
 }
 
+model Pot {
+    /// `name`: the name of the pot
+    name  String  @id
+    /// `value`: the amount of the pi tokens contained in the pot
+    value Float   @default(0)
+    /// `admin`: the username of the pot's marshall
+    admin String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
 enum PiTransactionType {
     CLAIM_REWARD
     REFUND

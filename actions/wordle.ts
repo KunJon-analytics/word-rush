@@ -166,7 +166,7 @@ export async function play(roundId: string, guess: string) {
     if (isCorrect) {
       // send add point event
       await inngest.send({
-        name: "users/point.increased",
+        name: "users/point.change",
         data: {
           increment: pointsConfig.success,
         },
@@ -177,7 +177,7 @@ export async function play(roundId: string, guess: string) {
     if (!isCorrect && history.length === 5) {
       // send add point event
       await inngest.send({
-        name: "users/point.increased",
+        name: "users/point.change",
         data: {
           increment: pointsConfig.failed,
         },

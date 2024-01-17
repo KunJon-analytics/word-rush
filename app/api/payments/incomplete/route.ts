@@ -25,12 +25,12 @@ export async function POST(req: Request) {
       `/v2/payments/${paymentId}`
     );
 
-    const piPayment = await prisma.piTransaction.findUnique({
+    const piTransaction = await prisma.piTransaction.findUnique({
       where: { paymentId, payerId: uid },
     });
 
     // payment doesn't exist
-    if (!piPayment) {
+    if (!piTransaction) {
       console.log("[INCOMPLETE_PAYMENT]", "Payment not found");
       return new NextResponse("Payment not found", { status: 400 });
     }
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     // console.log(horizonResponse.data);
 
     // and check other data as well e.g. amount
-    if (paymentIdOnBlock !== piPayment.paymentId) {
+    if (paymentIdOnBlock !== piTransaction.paymentId) {
       console.log(
         "[INCOMPLETE_PAYMENT]",
         "Payment id not same with blockchain"
@@ -56,8 +56,9 @@ export async function POST(req: Request) {
 
     // check if tx is still at INITIALIZED stage then add payer points if not only complete
     if (
-      piPayment.status === "INITIALIZED" &&
-      piPayment.amount <= currentPayment.data.amount
+      piTransaction.status === "INITIALIZED" &&
+      piTransaction.amount <= currentPayment.data.amount &&
+      piTransaction.type === "BUY_COINS"
     ) {
       await prisma.user.update({
         where: { uuid: payment.user_uid },

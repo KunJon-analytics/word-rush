@@ -37,6 +37,8 @@ export async function POST(req: Request) {
       return new NextResponse("Invalid transaction", { status: 401 });
     }
 
+    // check if tx is still at INITIALIZED stage then add payer points if not only complete
+
     if (currentPayment.data.amount < piTransaction.amount) {
       console.log("[COMPLETE_SUBSCRIPTION]", "Invalid transaction");
       return new NextResponse("Invalid transaction", { status: 401 });
@@ -52,25 +54,19 @@ export async function POST(req: Request) {
       txid,
     });
 
-    // check if tx is still at INITIALIZED stage then add payer points if not only complete
-    if (
-      piTransaction.status === "INITIALIZED" &&
-      piTransaction.amount <= currentPayment.data.amount
-    ) {
-      await prisma.user.update({
-        where: { uuid: currentPayment.data.user_uid },
-        data: { tokens: { increment: yearlySubscription.tokens } },
-      });
-    }
+    const user = await prisma.user.update({
+      where: { uuid: currentPayment.data.user_uid },
+      data: { tokens: { increment: yearlySubscription.tokens } },
+    });
 
     await prisma.piTransaction.update({
       where: { paymentId, payerId: session.uuid },
       data: { status: "COMPLETED", txId: txid },
     });
 
-    session.tokens = session.tokens + yearlySubscription.tokens;
+    session.tokens = user.tokens;
     await session.save();
-    revalidatePath("/(dashboard)/", "layout");
+    revalidatePath("/(dashboard)", "layout");
 
     return new NextResponse(`Completed the payment ${paymentId}`, {
       status: 200,

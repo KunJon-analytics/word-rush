@@ -1,5 +1,7 @@
 import { EventSchemas, Inngest } from "inngest";
 
+import { HuntRound } from "@prisma/client";
+
 type RoundComplete = {
   data: {
     roundId: string;
@@ -9,9 +11,30 @@ type RoundComplete = {
   };
 };
 
-type IncreasePoints = {
+type ChangePoints = {
   data: {
-    increment: number;
+    increment?: number;
+    decrement?: number;
+  };
+  user: {
+    uuid: string;
+  };
+};
+
+type ClaimTokens = {
+  data: {
+    round: HuntRound;
+  };
+  user: {
+    uuid: string;
+  };
+};
+
+type ChangePotValue = {
+  data: {
+    name: string;
+    increment?: number;
+    decrement?: number;
   };
   user: {
     uuid: string;
@@ -20,7 +43,9 @@ type IncreasePoints = {
 
 type Events = {
   "rounds/round.completed": RoundComplete;
-  "users/point.increased": IncreasePoints;
+  "users/point.change": ChangePoints;
+  "users/tokens.claim": ClaimTokens;
+  "pots/value.change": ChangePotValue;
 };
 
 // Create a client to send and receive events

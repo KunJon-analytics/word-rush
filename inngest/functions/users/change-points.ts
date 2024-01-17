@@ -1,19 +1,20 @@
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 
-export const increasePoints = inngest.createFunction(
+export const changePoints = inngest.createFunction(
   { id: "increase-points" },
-  { event: "users/point.increased" },
+  { event: "users/point.change" },
   async ({ event }) => {
-    // (event) increase user points
+    // (event) change user points
     const increment = event.data.increment;
+    const decrement = event.data.decrement;
     const uuid = event.user.uuid;
 
     try {
       // update point change to event..
       const user = await prisma.user.update({
         where: { uuid },
-        data: { points: { increment } },
+        data: { points: { increment, decrement } },
         select: { points: true, username: true },
       });
       return user;
