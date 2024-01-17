@@ -7,8 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Subscribe from "../shared/subscribe";
 import { getSession } from "@/actions/session";
+import Subscribe from "../shared/subscribe";
+import { DonateDialog } from "../shared/donate";
 
 type CardProps = React.ComponentProps<typeof Card>;
 
@@ -23,8 +24,9 @@ export async function TokensCard({ className, ...props }: CardProps) {
       <CardContent className="grid gap-4">
         <p className="text-sm font-medium leading-none">{tokens}</p>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex lg:flex-col justify-between lg:space-y-4">
         <Subscribe subscriber={subscriber} />
+        <DonateDialog />
       </CardFooter>
     </Card>
   );

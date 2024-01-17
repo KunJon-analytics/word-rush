@@ -97,7 +97,7 @@ const Subscribe = ({ subscriber }: { subscriber: string }) => {
     }
   };
   return (
-    <Button className="w-full" onClick={subscribe}>
+    <Button onClick={subscribe}>
       <Gem className="mr-2 h-4 w-4" /> Get More Tokens
     </Button>
   );

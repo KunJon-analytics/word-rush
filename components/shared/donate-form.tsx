@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -87,14 +86,11 @@ export function DonateForm({ donor }: { donor: string }) {
           control={form.control}
           name="amount"
           render={({ field }) => (
-            <FormItem className="grid grid-cols-4 items-center gap-4">
+            <FormItem className="">
               <FormLabel>Amount</FormLabel>
               <FormControl>
                 <Input type="number" step={0.1} {...field} />
               </FormControl>
-              <FormDescription>
-                This is the amount of Pi you are supporting with.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

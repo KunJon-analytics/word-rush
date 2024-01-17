@@ -7,6 +7,7 @@ import { getSession } from "@/actions/session";
 import Stage from "./Stage";
 import Subscribe from "../shared/subscribe";
 import { PlayStatsCard } from "./PlayStatsCard";
+import { DonateDialog } from "../shared/donate";
 
 type CardProps = React.ComponentProps<typeof Card> & {
   wordleData: GameReturnType;
@@ -30,7 +31,11 @@ export async function Wrapper({
       </CardHeader>
       <CardContent className="mt-3 grid grid-cols-12">
         <div className="col-span-12 px-4 sm:col-span-6 sm:px-5 lg:col-span-4">
-          <Subscribe subscriber={subscriber} />
+          <div className="flex justify-between">
+            <DonateDialog />
+            <Subscribe subscriber={subscriber} />
+          </div>
+
           <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8">
             <PlayStatsCard
               title="Hunters"
