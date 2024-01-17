@@ -6,6 +6,9 @@ import prisma from "@/lib/prisma";
 import platformAPIClient from "@/lib/platformAPIClient";
 import { SubscribeTx, PaymentDTO } from "@/types";
 import { yearlySubscription } from "@/lib/wordle";
+import { inngest } from "@/inngest/client";
+import { potsConfig } from "@/config/pot";
+import { safeParse } from "@/lib/pi";
 
 export async function POST(req: Request) {
   try {
@@ -66,6 +69,32 @@ export async function POST(req: Request) {
 
     session.tokens = user.tokens;
     await session.save();
+    // send share pot payment event
+    // send reward pot event
+    // send team pot event
+
+    await inngest.send([
+      {
+        name: "pots/value.change",
+        data: {
+          name: potsConfig.reward.name,
+          increment: safeParse(
+            potsConfig.reward.allocation * currentPayment.data.amount
+          ),
+        },
+        user: { uuid: session.uuid },
+      },
+      {
+        name: "pots/value.change",
+        data: {
+          name: potsConfig.team.name,
+          increment: safeParse(
+            potsConfig.team.allocation * currentPayment.data.amount
+          ),
+        },
+        user: { uuid: session.uuid },
+      },
+    ]);
     revalidatePath("/(dashboard)", "layout");
 
     return new NextResponse(`Completed the payment ${paymentId}`, {

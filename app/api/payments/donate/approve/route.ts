@@ -35,6 +35,11 @@ export async function POST(req: Request) {
       return new NextResponse("Active tx with payment ID", { status: 401 });
     }
 
+    if (currentPayment.data.amount < 0.1) {
+      console.log("APPROVE_DONATION", "Thanks for the donation");
+      return new NextResponse("Thanks for the donation", { status: 401 });
+    }
+
     await prisma.piTransaction.upsert({
       create: {
         amount: currentPayment.data.amount,

@@ -4,6 +4,9 @@ import { getSession } from "@/actions/session";
 import prisma from "@/lib/prisma";
 import platformAPIClient from "@/lib/platformAPIClient";
 import { DonateTx, PaymentDTO } from "@/types";
+import { inngest } from "@/inngest/client";
+import { potsConfig } from "@/config/pot";
+import { safeParse } from "@/lib/pi";
 
 export async function POST(req: Request) {
   try {
@@ -56,6 +59,33 @@ export async function POST(req: Request) {
       where: { paymentId, payerId: session.uuid },
       data: { status: "COMPLETED", txId: txid },
     });
+
+    // send share pot payment event
+    // send reward pot event
+    // send team pot event
+
+    await inngest.send([
+      {
+        name: "pots/value.change",
+        data: {
+          name: potsConfig.reward.name,
+          increment: safeParse(
+            potsConfig.reward.allocation * currentPayment.data.amount
+          ),
+        },
+        user: { uuid: session.uuid },
+      },
+      {
+        name: "pots/value.change",
+        data: {
+          name: potsConfig.team.name,
+          increment: safeParse(
+            potsConfig.team.allocation * currentPayment.data.amount
+          ),
+        },
+        user: { uuid: session.uuid },
+      },
+    ]);
 
     return new NextResponse(`Completed the payment ${paymentId}`, {
       status: 200,

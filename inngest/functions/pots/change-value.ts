@@ -13,10 +13,11 @@ export const changePotValue = inngest.createFunction(
     try {
       // update pot value to event..
 
-      const pot = await prisma.pot.update({
+      const pot = await prisma.pot.upsert({
         where: { name },
-        data: { value: { increment, decrement } },
+        update: { value: { increment, decrement } },
         select: { name: true, value: true },
+        create: { name, value: increment },
       });
 
       return pot;

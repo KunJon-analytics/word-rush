@@ -1,31 +1,11 @@
 import { PaymentDTO } from "@/types";
-import axiosClient, { config } from "./axios-client";
-import PiNetwork from "pi-backend";
+import axiosClient from "./axios-client";
 
 export const onIncompletePaymentFound = (payment: PaymentDTO<null>) => {
   console.log("onIncompletePaymentFound", payment);
   return axiosClient.post("/payments/incomplete", { payment });
 };
 
-export const onReadyForServerApproval = (paymentId: string) => {
-  console.log("onReadyForServerApproval", paymentId);
-  axiosClient.post("/payments/approve", { paymentId }, config);
-};
-
-export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
-  console.log("onReadyForServerCompletion", paymentId, txid);
-  axiosClient.post("/payments/complete", { paymentId, txid }, config);
-};
-
-export const onCancel = (paymentId: string) => {
-  console.log("onCancel", paymentId);
-  return axiosClient.post("/payments/cancelled_payment", { paymentId });
-};
-
-export const onError = (error: Error, payment?: PaymentDTO<null>) => {
-  console.error("onError", error);
-  if (payment) {
-    console.log(payment);
-    // handle the error accordingly
-  }
+export const safeParse = (input: number) => {
+  return parseFloat(Number(input).toFixed(2));
 };
