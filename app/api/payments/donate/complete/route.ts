@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 
 import { getSession } from "@/actions/session";
 import prisma from "@/lib/prisma";
 import platformAPIClient from "@/lib/platformAPIClient";
-import { SubscribeTx, PaymentDTO } from "@/types";
-import { yearlySubscription } from "@/lib/wordle";
+import { DonateTx, PaymentDTO } from "@/types";
 
 export async function POST(req: Request) {
   try {
     const session = await getSession();
 
     if (!session.isLoggedIn) {
-      console.log("[COMPLETE_SUBSCRIPTION]", "User not authenticated");
+      console.log("[COMPLETE_DONATION]", "User not authenticated");
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -24,7 +22,7 @@ export async function POST(req: Request) {
       txid: string;
     } = await req.json();
 
-    const currentPayment = await platformAPIClient.get<PaymentDTO<SubscribeTx>>(
+    const currentPayment = await platformAPIClient.get<PaymentDTO<DonateTx>>(
       `/v2/payments/${paymentId}`
     );
 
@@ -33,19 +31,19 @@ export async function POST(req: Request) {
     });
 
     if (!piTransaction) {
-      console.log("[COMPLETE_SUBSCRIPTION]", "Invalid transaction");
+      console.log("[COMPLETE_DONATION]", "Invalid transaction");
       return new NextResponse("Invalid transaction", { status: 401 });
     }
 
     // check if tx is still at INITIALIZED stage then add payer tokens if not only complete
 
     if (currentPayment.data.amount < piTransaction.amount) {
-      console.log("[COMPLETE_SUBSCRIPTION]", "Invalid transaction");
+      console.log("[COMPLETE_DONATION]", "Invalid transaction");
       return new NextResponse("Invalid transaction", { status: 401 });
     }
 
     if (piTransaction.status !== "INITIALIZED") {
-      console.log("[COMPLETE_SUBSCRIPTION]", "Invalid transaction");
+      console.log("[COMPLETE_DONATION]", "Invalid transaction");
       return new NextResponse("Invalid transaction", { status: 401 });
     }
 
@@ -54,19 +52,10 @@ export async function POST(req: Request) {
       txid,
     });
 
-    const user = await prisma.user.update({
-      where: { uuid: currentPayment.data.user_uid },
-      data: { tokens: { increment: yearlySubscription.tokens } },
-    });
-
     await prisma.piTransaction.update({
       where: { paymentId, payerId: session.uuid },
       data: { status: "COMPLETED", txId: txid },
     });
-
-    session.tokens = user.tokens;
-    await session.save();
-    revalidatePath("/(dashboard)", "layout");
 
     return new NextResponse(`Completed the payment ${paymentId}`, {
       status: 200,

@@ -25,11 +25,13 @@ export type User = AuthResult["user"];
 
 export type SubscribeTx = { subscriber: string };
 
-export interface PiCallbacks {
+export type DonateTx = { donor: string };
+
+export interface PiCallbacks<T> {
   onReadyForServerApproval: (paymentId: string) => void;
   onReadyForServerCompletion: (paymentId: string, txid: string) => void;
   onCancel: (paymentId: string) => Promise<AxiosResponse<any, any>>;
-  onError: (error: Error, payment?: PaymentDTO<SubscribeTx>) => void;
+  onError: (error: Error, payment?: PaymentDTO<T>) => void;
 }
 
 export interface PaymentDTO<T> {

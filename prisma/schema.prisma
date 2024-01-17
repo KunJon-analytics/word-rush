@@ -157,6 +157,7 @@ enum PiTransactionType {
     CLAIM_REWARD
     REFUND
     BUY_COINS
+    DONATE
 }
 
 enum PiTransactionStatus {
