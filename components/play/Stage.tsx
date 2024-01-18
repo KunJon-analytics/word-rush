@@ -2,10 +2,19 @@ import React from "react";
 
 import { cn } from "@/lib/utils";
 import { $Enums } from "@prisma/client";
+import StatsPopover from "./StatsPopover";
 
-const Stage = ({ stage }: { stage: $Enums.RoundStage }) => {
+interface StageProps {
+  hunters: number;
+  attempts: number;
+  winner: string;
+  start: string;
+  stage: $Enums.RoundStage;
+}
+
+const Stage = ({ stage, attempts, hunters, start, winner }: StageProps) => {
   return (
-    <div className="hidden cursor-pointer items-center space-x-2 sm:flex">
+    <div className="cursor-pointer items-center space-x-2 flex">
       <div
         className={cn(
           "h-3 w-3 rounded-full",
@@ -16,6 +25,12 @@ const Stage = ({ stage }: { stage: $Enums.RoundStage }) => {
         )}
       ></div>
       <p>{stage}</p>
+      <StatsPopover
+        attempts={attempts}
+        hunters={hunters}
+        start={start}
+        winner={winner}
+      />
     </div>
   );
 };
