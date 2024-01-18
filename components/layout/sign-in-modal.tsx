@@ -41,7 +41,7 @@ export function SignInModal({ size = "sm", action }: SignInModalProps) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button className="px-3" variant="default" size={size}>
-            Join the Challenge
+            Play Now!
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -50,10 +50,10 @@ export function SignInModal({ size = "sm", action }: SignInModalProps) {
               <Icons.logo className="h-10 w-10" />
             </Link>
             <DialogTitle> Sign In</DialogTitle>
-            <DialogDescription>
-              Start playing Word Rush. Sign in seamlessly with your Pi Wallet
-              with one simple click to start earning Pi hourly by being the
-              first person to find a word.
+            <DialogDescription className="text-center">
+              Unlock a world of words and rewards! Sign in to Word Rush to track
+              your progress, claim victories, and stay connected with the global
+              community of word hunters. Let the adventure begin!
             </DialogDescription>
           </DialogHeader>
           <SignInForm action={action} />
@@ -66,7 +66,7 @@ export function SignInModal({ size = "sm", action }: SignInModalProps) {
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button className="px-3" variant="default" size={size}>
-          Join the Challenge
+          Play Now!
         </Button>
       </DrawerTrigger>
       <DrawerContent>
@@ -75,10 +75,10 @@ export function SignInModal({ size = "sm", action }: SignInModalProps) {
             <Icons.logo className="h-10 w-10" />
           </Link>
           <DrawerTitle> Sign In</DrawerTitle>
-          <DrawerDescription>
-            Start playing Word Rush. Sign in seamlessly with your Pi Wallet with
-            one simple click to start earning Pi hourly by being the first
-            person to find a word.
+          <DrawerDescription className="text-center">
+            Unlock a world of words and rewards! Sign in to Word Rush to track
+            your progress, claim victories, and stay connected with the global
+            community of word hunters. Let the adventure begin!
           </DrawerDescription>
         </DrawerHeader>
         <SignInForm className="px-4" action={action} />

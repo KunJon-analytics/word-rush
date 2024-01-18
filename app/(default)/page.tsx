@@ -32,11 +32,10 @@ export default async function Home() {
             style={{ animationDelay: "0.25s", animationFillMode: "forwards" }}
           >
             <Balancer>
-              Unlock{" "}
               <span className="relative bg-gradient-to-r from-indigo-500 to-purple-500/80 bg-clip-text font-extrabold text-transparent">
-                Pi Tokens
+                Word Rush:
               </span>{" "}
-              Every Hour
+              Hunt, Win, Earn Pi Tokens!
             </Balancer>
           </h1>
 
@@ -44,8 +43,8 @@ export default async function Home() {
             className="max-w-[42rem] animate-fade-up leading-normal text-muted-foreground opacity-0 sm:text-xl sm:leading-8"
             style={{ animationDelay: "0.35s", animationFillMode: "forwards" }}
           >
-            Word Rush: Hunt, Earn, Repeat! Find hidden words every hour to claim
-            Pi tokens instantly. Join now for language fun and crypto rewards!
+            Embark on an Exciting Journey of Wordplay, Strategy, and Rewards in
+            the Ultimate Global Word-Hunting Adventure with Word Rush!
           </p>
 
           <div
@@ -56,7 +55,7 @@ export default async function Home() {
               <SignInModal size={"lg"} action={getActiveRound} />
             ) : (
               <Button asChild className="px-3" variant="default" size={"lg"}>
-                <Link href={`${activeRound}`}> Join the Challenge</Link>
+                <Link href={`${activeRound}`}> Play Now!</Link>
               </Button>
             )}
 
@@ -70,7 +69,7 @@ export default async function Home() {
               )}
             >
               <Icons.chevrondown className="mr-2 h-4 w-4" />
-              <p>Claim 1π</p>
+              <p>Get Pi App!</p>
             </Link>
           </div>
         </div>
