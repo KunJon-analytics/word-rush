@@ -25,6 +25,8 @@ export type User = AuthResult["user"];
 
 export type SubscribeTx = { subscriber: string };
 
+export type ClaimTx = { roundId: string };
+
 export type DonateTx = { donor: string };
 
 export interface PiCallbacks<T> {

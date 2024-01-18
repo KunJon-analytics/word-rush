@@ -1,11 +1,19 @@
 import * as React from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { MeReturnType } from "@/types";
 import { getSession } from "@/actions/session";
+import { getRewardPot } from "@/actions/pots";
 import Round from "./round";
 
 export async function RecentRounds({ me }: { me: MeReturnType }) {
+  const rewardPot = await getRewardPot();
   const session = await getSession();
   const sortedActivites = me.activities
     .filter((activity) => {
@@ -23,6 +31,9 @@ export async function RecentRounds({ me }: { me: MeReturnType }) {
         <CardTitle className="font-medium tracking-wide">
           Claim your wins
         </CardTitle>
+        {!sortedActivites.length && (
+          <CardDescription>You have no unclaimmed wins</CardDescription>
+        )}
       </CardHeader>
       <CardContent className="mt-10 space-y-3.5">
         {sortedActivites.slice(0, 4).map((activity) => (
@@ -32,6 +43,7 @@ export async function RecentRounds({ me }: { me: MeReturnType }) {
             id={activity.roundId}
             stage={activity.round.stage}
             lastPlayed={activity.updatedAt}
+            rewardPot={rewardPot}
           />
         ))}
       </CardContent>

@@ -14,20 +14,32 @@ export const completeRound = inngest.createFunction(
     const uuid = event.user.uuid;
 
     try {
-      const round = await prisma.huntRound.findUnique({
-        where: { id: roundId, winnerId: uuid },
-        include: { winner: true },
-      });
+      // get round
+      const round = await step.run("get-round-to-complete", () =>
+        prisma.huntRound.findUnique({
+          where: { id: roundId, winnerId: uuid },
+          include: { winner: true },
+        })
+      );
+
       if (round?.stage !== "FINISHED") {
         throw new NonRetriableError("Invalid Round status", {
           cause: `roundId: ${roundId}`,
         });
       }
-      // check for queued tx
-      const queuedRound = await prisma.huntRound.findFirst({
-        where: { stage: "QUEUED" },
-      });
-      if (queuedRound) {
+      // check for queued tx or existing started tx
+      const queuedRound = await step.run("get-queued-round", () =>
+        prisma.huntRound.findFirst({
+          where: { stage: "QUEUED" },
+        })
+      );
+      const started = await step.run("get-started-round", () =>
+        prisma.huntRound.findFirst({
+          where: { stage: "STARTED" },
+        })
+      );
+
+      if (queuedRound && !started) {
         await prisma.huntRound.update({
           where: { id: queuedRound.id },
           data: { stage: "STARTED" },

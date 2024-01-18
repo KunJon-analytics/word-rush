@@ -1,9 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import prisma from "@/lib/prisma";
-import { getSession } from "./session";
 import { inngest } from "@/inngest/client";
 import { potsConfig } from "@/config/pot";
+import { getSession } from "./session";
 
 export const getMe = async () => {
   const session = await getSession();
@@ -25,10 +27,14 @@ export const getMe = async () => {
   }
 };
 
-export const claim = async (roundId: string) => {
+export const claim = async (formData: FormData) => {
+  const roundId = formData.get("roundId");
+  if (!roundId) {
+    return { success: false, message: "Bad Input" };
+  }
   const session = await getSession();
   if (!session.isLoggedIn) {
-    throw new Error("Unauthenticated");
+    return { success: false, message: "Unauthenticated" };
   }
   try {
     const rewardPot = await prisma.pot.upsert({
@@ -38,13 +44,17 @@ export const claim = async (roundId: string) => {
     });
 
     if (rewardPot.value <= potsConfig.reward.lowerLimit) {
-      throw new Error("Reward pot at lower limit");
+      return { success: false, message: "Reward pot at lower limit" };
     }
     const claimmableRound = await prisma.huntRound.findUnique({
-      where: { winnerId: session.uuid, stage: "FINISHED", id: roundId },
+      where: {
+        winnerId: session.uuid,
+        stage: "FINISHED",
+        id: roundId as string,
+      },
     });
     if (!claimmableRound) {
-      throw new Error("You have no round to claim");
+      return { success: false, message: "You have no round to claim" };
     }
 
     // make claimed
@@ -61,9 +71,10 @@ export const claim = async (roundId: string) => {
       },
       user: { uuid: session.uuid },
     });
+    revalidatePath("/", "layout");
     return { success: true, message: "Transaction successfully sent!!!" };
   } catch (error) {
     console.log(error);
-    throw new Error("Internal Server Error");
+    return { success: false, message: "Internal Server Error" };
   }
 };

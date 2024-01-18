@@ -28,6 +28,7 @@ import {
   Trash,
   User,
   X,
+  PiSquare,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -52,6 +53,7 @@ export const Icons = {
   search: Search,
   settings: Settings,
   spinner: Loader2,
+  pi: PiSquare,
   sun: SunMedium,
   trash: Trash,
   user: User,

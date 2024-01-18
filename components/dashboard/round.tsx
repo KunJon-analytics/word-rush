@@ -2,14 +2,24 @@ import React from "react";
 import { formatDistance } from "date-fns";
 import Link from "next/link";
 
+import { Pot } from "@prisma/client";
+import { safeParse } from "@/lib/pi";
+import { potsConfig } from "@/config/pot";
+import ClaimForm from "./claim-form";
+
 interface Props {
   stage: string;
   id: string;
   guesses: number;
   lastPlayed: Date;
+  rewardPot: Pot | null;
 }
 
-const Round = ({ stage, guesses, lastPlayed, id }: Props) => {
+const Round = ({ stage, guesses, lastPlayed, id, rewardPot }: Props) => {
+  if (!rewardPot) {
+    return null;
+  }
+  const reward = safeParse(rewardPot.value / 24);
   return (
     <div className="flex cursor-pointer items-center justify-between">
       <div className="flex items-center space-x-3.5">
@@ -24,7 +34,11 @@ const Round = ({ stage, guesses, lastPlayed, id }: Props) => {
           </p>
         </div>
       </div>
-      <p className="font-medium">{stage}</p>
+      {rewardPot.value > potsConfig.reward.lowerLimit ? (
+        <ClaimForm roundId={id} reward={reward} />
+      ) : (
+        <p className="font-medium">{stage}</p>
+      )}
     </div>
   );
 };

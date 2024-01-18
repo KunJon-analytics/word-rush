@@ -30,6 +30,16 @@ type ClaimTokens = {
   };
 };
 
+type PayClaim = {
+  data: {
+    round: HuntRound;
+    claimAmount: number;
+  };
+  user: {
+    uuid: string;
+  };
+};
+
 type ChangePotValue = {
   data: {
     name: string;
@@ -46,6 +56,7 @@ type Events = {
   "users/point.change": ChangePoints;
   "users/tokens.claim": ClaimTokens;
   "pots/value.change": ChangePotValue;
+  "payments/pay.claim": PayClaim;
 };
 
 // Create a client to send and receive events
