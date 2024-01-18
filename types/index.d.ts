@@ -100,7 +100,7 @@ export type DefaultConfig = {
 
 export type SessionUser = Pick<
   IronSession<SessionData>,
-  "accessToken" | "isLoggedIn" | "profileId" | "username" | "uuid"
+  "accessToken" | "isLoggedIn" | "tokens" | "username" | "uuid"
 >;
 
 export type DashboardConfig = {
