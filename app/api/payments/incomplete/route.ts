@@ -1,5 +1,3 @@
-import PiNetwork from "pi-backend";
-
 import { NextResponse } from "next/server";
 import axios from "axios";
 
@@ -7,11 +5,6 @@ import prisma from "@/lib/prisma";
 import platformAPIClient from "@/lib/platformAPIClient";
 import { PaymentDTO, SubscribeTx } from "@/types";
 import { yearlySubscription } from "@/lib/wordle";
-
-export const pi = new PiNetwork(
-  process.env.PI_API_KEY as string,
-  process.env.PI_SECRET_KEY as string
-);
 
 export async function POST(req: Request) {
   try {

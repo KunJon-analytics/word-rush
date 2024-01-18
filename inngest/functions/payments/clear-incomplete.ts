@@ -1,8 +1,8 @@
 import { inngest } from "@/inngest/client";
-import { pi } from "@/app/api/payments/incomplete/route";
 import { ClaimTx, PaymentDTO } from "@/types";
 import prisma from "@/lib/prisma";
 import { potsConfig } from "@/config/pot";
+import { pi } from "@/lib/pi-client";
 import { changePotValue } from "../pots/change-value";
 
 export const clearIncomplete = inngest.createFunction(

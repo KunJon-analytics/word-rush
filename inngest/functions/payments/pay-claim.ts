@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { potsConfig } from "@/config/pot";
-import { pi } from "@/app/api/payments/incomplete/route";
 import { changePotValue } from "../pots/change-value";
+import { pi } from "@/lib/pi-client";
 
 export const payClaim = inngest.createFunction(
   { id: "pay-claim" },
