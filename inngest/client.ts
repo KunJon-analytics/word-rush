@@ -21,6 +21,16 @@ type ChangePoints = {
   };
 };
 
+type ChangeTokens = {
+  data: {
+    increment?: number;
+    decrement?: number;
+  };
+  user: {
+    uuid: string;
+  };
+};
+
 type ClaimTokens = {
   data: {
     round: HuntRound;
@@ -54,6 +64,7 @@ type ChangePotValue = {
 type Events = {
   "rounds/round.completed": RoundComplete;
   "users/point.change": ChangePoints;
+  "users/tokens.change": ChangeTokens;
   "users/tokens.claim": ClaimTokens;
   "pots/value.change": ChangePotValue;
   "payments/pay.claim": PayClaim;

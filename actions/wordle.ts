@@ -1,13 +1,12 @@
 "use server";
 
 import { promises as fs } from "fs";
+import { revalidatePath } from "next/cache";
 
 import prisma from "@/lib/prisma";
-import { GameReturnType } from "@/types";
 import { getWordColor, pointsConfig } from "@/lib/wordle";
 import { inngest } from "@/inngest/client";
 import { getSession } from "./session";
-import { revalidatePath } from "next/cache";
 
 export const getRandomWord = async () => {
   try {
@@ -33,9 +32,21 @@ export const getActiveRound = async () => {
       where: { stage: "STARTED" },
       select: { id: true },
     });
-    return activeRoundId
-      ? `/dashboard/rounds/${activeRoundId.id}/play`
-      : "/dashboard";
+    if (!activeRoundId) {
+      return "/dashboard";
+    }
+    const hunter = await prisma.user.findUnique({
+      where: { uuid: session.uuid },
+    });
+    const activeRoundActivity = await prisma.hunterActivity.findUnique({
+      where: {
+        activityId: { hunterId: session.uuid, roundId: activeRoundId.id },
+      },
+    });
+    if (!activeRoundActivity && !hunter?.tokens) {
+      return "/dashboard";
+    }
+    return `/dashboard/rounds/${activeRoundId.id}/play`;
   } catch (error) {
     console.log(error);
     return "/dashboard";
@@ -57,12 +68,45 @@ export const getRoundData = async (roundId: string) => {
       throw new Error("No game round");
     }
 
-    const activity: GameReturnType = await prisma.hunterActivity.upsert({
-      create: { hunterId: session.uuid, roundId: huntRound.id },
-      update: {},
+    const oldActivity = await prisma.hunterActivity.findUnique({
       where: {
         activityId: { hunterId: session.uuid, roundId: huntRound.id },
       },
+      include: {
+        guesses: true,
+        round: {
+          select: {
+            _count: true,
+            createdAt: true,
+            id: true,
+            stage: true,
+            updatedAt: true,
+            winner: { select: { username: true } },
+          },
+        },
+      },
+    });
+
+    if (oldActivity) {
+      return oldActivity;
+    }
+
+    if (session.tokens < 1) {
+      throw new Error("You have no tokens");
+    }
+
+    // send decrease tokens event and update session
+    // send claim event
+    await inngest.send({
+      name: "users/tokens.change",
+      data: {
+        decrement: 1,
+      },
+      user: { uuid: session.uuid },
+    });
+
+    const activity = await prisma.hunterActivity.create({
+      data: { hunterId: session.uuid, roundId: huntRound.id },
       include: {
         guesses: true,
         round: {
@@ -100,7 +144,7 @@ export async function play(roundId: string, guess: string) {
 
     const hunterActivity = await prisma.hunterActivity.findUnique({
       where: { activityId: { hunterId: session.uuid, roundId } },
-      include: { guesses: true, round: true },
+      include: { guesses: true, round: true, hunter: true },
     });
 
     if (!hunterActivity) {
@@ -184,6 +228,8 @@ export async function play(roundId: string, guess: string) {
         user: { uuid: session.uuid },
       });
     }
+    session.tokens = hunterActivity.hunter.tokens;
+    await session.save();
     revalidatePath("/", "layout");
   } catch (error) {
     console.log("[PLAY_GAME]", error);
