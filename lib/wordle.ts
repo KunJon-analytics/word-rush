@@ -1,5 +1,3 @@
-import { GameReturnType } from "@/types";
-
 export const letters = [
   "A",
   "B",
