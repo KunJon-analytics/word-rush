@@ -2,21 +2,18 @@
 
 import { promises as fs } from "fs";
 import { revalidatePath } from "next/cache";
-import path from "path";
+import { join } from "path";
 
 import prisma from "@/lib/prisma";
 import { getWordColor, pointsConfig } from "@/lib/wordle";
 import { inngest } from "@/inngest/client";
 import { getSession } from "./session";
 
+const filesDirectory = join(process.cwd(), "_files");
+
 export const getRandomWord = async () => {
   try {
-    const resolvedPath = path.resolve(
-      process.cwd(),
-      "./public",
-      "files",
-      "words.txt"
-    );
+    const resolvedPath = join(filesDirectory, "words.txt");
     console.log({ resolvedPath });
     const file = await fs.readFile(resolvedPath, "utf8");
     const wordsList = file.split("\r\n");
