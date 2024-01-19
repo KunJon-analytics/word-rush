@@ -33,14 +33,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
           {children}
           <Toaster />
         </Providers>
-        <Script
-          src="https://sdk.minepi.com/pi-sdk.js"
-          strategy="beforeInteractive"
-        />
-        <Script id="init-pi">
-          {`
-      Pi.init({ version: "2.0", sandbox: true });`}
-        </Script>
       </body>
     </html>
   );
