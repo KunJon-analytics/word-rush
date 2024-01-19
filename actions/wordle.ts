@@ -11,8 +11,14 @@ import { getSession } from "./session";
 
 export const getRandomWord = async () => {
   try {
-    const filePath = path.join(process.cwd(), "public", "files", "words.txt");
-    const file = await fs.readFile(filePath, "utf8");
+    const resolvedPath = path.resolve(
+      process.cwd(),
+      "./public",
+      "files",
+      "words.txt"
+    );
+    console.log({ resolvedPath });
+    const file = await fs.readFile(resolvedPath, "utf8");
     const wordsList = file.split("\r\n");
     const word = wordsList[Math.floor(Math.random() * wordsList.length)];
     if (word.length !== 5) {
