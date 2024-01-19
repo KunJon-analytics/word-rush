@@ -9,13 +9,13 @@ import { getWordColor, pointsConfig } from "@/lib/wordle";
 import { inngest } from "@/inngest/client";
 import { getSession } from "./session";
 
-const filesDirectory = join(process.cwd(), "_files");
+const wordsDirectory = join(process.cwd(), "_files", "words.txt");
 
 export const getRandomWord = async () => {
   try {
-    const resolvedPath = join(filesDirectory, "words.txt");
-    console.log({ resolvedPath });
-    const file = await fs.readFile(resolvedPath, "utf8");
+    const file = await fs.readFile(wordsDirectory, "utf8");
+    console.log({ file });
+
     const wordsList = file.split("\r\n");
     const word = wordsList[Math.floor(Math.random() * wordsList.length)];
     if (word.length !== 5) {
