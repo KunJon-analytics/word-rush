@@ -11,7 +11,12 @@ import { getSession } from "./session";
 
 export const getRandomWord = async () => {
   try {
-    const filePath = path.join(process.cwd(), "lib", "words.txt");
+    let pathArray: string[];
+    pathArray =
+      process.env.NODE_ENV === "production"
+        ? [process.cwd(), "files", "words.txt"]
+        : [process.cwd(), "public", "files", "words.txt"];
+    const filePath = path.join(...pathArray);
     const file = await fs.readFile(filePath, "utf8");
     const wordsList = file.split("\r\n");
     const word = wordsList[Math.floor(Math.random() * wordsList.length)];
