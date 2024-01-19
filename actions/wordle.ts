@@ -14,9 +14,9 @@ const wordsDirectory = join(process.cwd(), "_files", "words.txt");
 export const getRandomWord = async () => {
   try {
     const file = await fs.readFile(wordsDirectory, "utf8");
-    console.log({ file });
+    const delimeter = process.env.NODE_ENV === "production" ? "\n" : "\r\n";
 
-    const wordsList = file.split("\r\n");
+    const wordsList = file.split(delimeter);
     const word = wordsList[Math.floor(Math.random() * wordsList.length)];
     if (word.length !== 5) {
       return "jerry";
