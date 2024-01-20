@@ -29,6 +29,6 @@ export const sessionOptions: SessionOptions = {
     secure: process.env.NODE_ENV === "production",
     maxAge: undefined,
 
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "none", // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite#lax
+    sameSite: "none", // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite#lax
   },
 };
