@@ -31,7 +31,6 @@ export async function login(auth: AuthResult) {
     const me = await platformAPIClient.get(`/me`, {
       headers: { Authorization: `Bearer ${auth.accessToken}` },
     });
-    // console.log(me);
   } catch (err) {
     console.log("[LOGIN_SERVER]", err);
     console.log(err);

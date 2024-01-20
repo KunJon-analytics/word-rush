@@ -32,6 +32,13 @@ export default function SignInForm({ className, action }: SignInFormProps) {
           );
           await login(authResult);
           const link = await action();
+          if (link === "unauthenticated") {
+            return toast({
+              variant: "destructive",
+              title: "Error",
+              description: "There was an error!.",
+            });
+          }
           router.push(`${link}`);
           // toast message
           toast({
