@@ -10,19 +10,39 @@ export const clearIncomplete = inngest.createFunction(
   { cron: "5 * * * *" },
   async ({ step }) => {
     try {
-      // then loop through the payments
-      const incompletePayments =
-        (await pi.getIncompleteServerPayments()) as unknown as {
-          incomplete_server_payments: PaymentDTO<ClaimTx>[];
-        };
+      // get incomplete payments
+      const incompletePayments = await step.run(
+        "get-incomplete-payments",
+        () =>
+          pi.getIncompleteServerPayments() as unknown as {
+            incomplete_server_payments: PaymentDTO<ClaimTx>[];
+          }
+      );
+
       const incompleteServerPayments: PaymentDTO<ClaimTx>[] =
         incompletePayments.incomplete_server_payments;
 
       const incompletePayment = incompleteServerPayments[0];
       if (incompletePayment) {
-        const round = await prisma.huntRound.findUnique({
-          where: { id: incompletePayment.metadata.roundId },
-        });
+        // get round
+        const round = await step.run("get-incomplete-payment-round", () =>
+          prisma.huntRound.findUnique({
+            where: { id: incompletePayment.metadata.roundId },
+          })
+        );
+
+        if (!round) {
+          // cancel the payment
+          const cancelledPayment = await step.run(
+            "cancel-incomplete-payment-with-no-round",
+            () => pi.cancelPayment(incompletePayment.identifier)
+          );
+
+          return {
+            error: "No round for payment",
+            cancelledPayment,
+          };
+        }
 
         const dev_approved = incompletePayment.status.developer_approved;
         const dev_completed = incompletePayment.status.developer_completed;
@@ -31,51 +51,71 @@ export const clearIncomplete = inngest.createFunction(
         const user = incompletePayment.user_uid;
 
         if (dev_approved && !dev_completed) {
-          const piTransaction = await prisma.piTransaction.upsert({
-            where: {
-              paymentId,
-              purposeId: incompletePayment.metadata.roundId,
-            },
-            create: {
-              paymentId,
-              purposeId: incompletePayment.metadata.roundId,
-              amount,
-              type: "CLAIM_REWARD",
-              payerId: user,
-            },
-            update: {},
-          });
-          // save the payment information in the DB
+          if (
+            !!incompletePayment?.transaction?.txid &&
+            incompletePayment.transaction?.verified
+          ) {
+            // complete the payment
+            const txid = incompletePayment.transaction.txid;
+            // update the pitx with the txid
+            await step.run("update-pi-transaction", () =>
+              prisma.piTransaction.update({
+                where: { paymentId },
+                data: { txId: txid, status: "COMPLETED" },
+              })
+            );
+            const completedPayment = await step.run(
+              "complete-payment-with-verified-tx",
+              () => pi.completePayment(paymentId, txid)
+            );
+
+            // send reduce pot event
+            const pot = await step.invoke("reduce-reward-pot-value", {
+              function: changePotValue,
+              data: {
+                decrement: completedPayment.amount,
+                name: potsConfig.reward.name,
+              },
+              user: { uuid: user },
+            });
+
+            return { pot, round };
+          }
+
+          // get or create tx claim
+          const piTransaction = await step.run("get-or-create-claim-tx", () =>
+            prisma.piTransaction.upsert({
+              where: {
+                paymentId,
+                purposeId: incompletePayment.metadata.roundId,
+              },
+              create: {
+                paymentId,
+                purposeId: incompletePayment.metadata.roundId,
+                amount,
+                type: "CLAIM_REWARD",
+                payerId: user,
+              },
+              update: {},
+            })
+          );
 
           // it is strongly recommended that you store the txid along with the paymentId you stored earlier for your reference.
-          const claimTxId = await pi.submitPayment(paymentId);
+          const claimTxId = await step.run("submit-payment", () =>
+            pi.submitPayment(paymentId)
+          );
 
-          // update the Refund PaymentID with the txid
-          await prisma.piTransaction.update({
-            where: { paymentId: piTransaction.paymentId },
-            data: { txId: claimTxId, status: "COMPLETED" },
-          });
+          // update the pitx with the txid
+          await step.run("update-claim-tx", () =>
+            prisma.piTransaction.update({
+              where: { paymentId: piTransaction.paymentId },
+              data: { txId: claimTxId, status: "COMPLETED" },
+            })
+          );
 
           // complete the payment
-          await pi.completePayment(paymentId, claimTxId);
-
-          // send reduce pot event
-          const pot = await step.invoke("reduce-reward-pot-value", {
-            function: changePotValue,
-            data: {
-              decrement: amount,
-              name: potsConfig.reward.name,
-            },
-            user: { uuid: user },
-          });
-          return { pot, round };
-        }
-
-        if (dev_completed && incompletePayment.transaction?.verified) {
-          // complete the payment
-          await pi.completePayment(
-            paymentId,
-            incompletePayment.transaction.txid
+          await step.run("complete-claim-payment", () =>
+            pi.completePayment(paymentId, claimTxId)
           );
 
           // send reduce pot event
@@ -87,7 +127,6 @@ export const clearIncomplete = inngest.createFunction(
             },
             user: { uuid: user },
           });
-
           return { pot, round };
         }
 

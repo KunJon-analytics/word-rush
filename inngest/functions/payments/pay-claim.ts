@@ -54,7 +54,7 @@ export const payClaim = inngest.createFunction(
       );
 
       // complete the payment
-      await step.run("create-payment", () =>
+      await step.run("complete-payment", () =>
         pi.completePayment(paymentId, claimTxId)
       );
 
