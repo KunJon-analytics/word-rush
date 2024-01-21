@@ -108,12 +108,8 @@ const features = [
             y2="0%"
             id="linearGradient-1"
           >
-            <stop stop-color="currentColor" offset="0%"></stop>
-            <stop
-              stop-color="currentColor"
-              stop-opacity="0"
-              offset="100%"
-            ></stop>
+            <stop stopColor="currentColor" offset="0%"></stop>
+            <stop stopColor="currentColor" stopOpacity="0" offset="100%"></stop>
           </linearGradient>
           <linearGradient
             x1="100%"
@@ -122,8 +118,8 @@ const features = [
             y2="76.8972222%"
             id="linearGradient-2"
           >
-            <stop stop-color="#000000" stop-opacity="0.9" offset="0%"></stop>
-            <stop stop-color="#1A1A1A" stop-opacity="0" offset="100%"></stop>
+            <stop stopColor="#000000" stopOpacity="0.9" offset="0%"></stop>
+            <stop stopColor="#1A1A1A" stopOpacity="0" offset="100%"></stop>
           </linearGradient>
         </defs>
         <g>
@@ -137,7 +133,7 @@ const features = [
           ></path>
           <path
             d="M0,44.1386667 C0,19.7615542 19.7615542,0 44.1386667,0 L211.861333,0 C236.238446,0 256,19.7615542 256,44.1386667 L256,186.787556 C256,212.003556 224.085333,222.947556 208.611556,203.043556 L160.220444,140.792889 L160.220444,216.277333 C160.220444,238.215556 142.436001,256 120.497778,256 L44.1386667,256 C19.7615542,256 0,236.238446 0,211.861333 L0,44.1386667 Z M44.1386667,35.3137778 C39.2604444,35.3137778 35.3137778,39.2604444 35.3137778,44.1315556 L35.3137778,211.861333 C35.3137778,216.739556 39.2604444,220.693333 44.1315556,220.693333 L121.820444,220.693333 C124.259556,220.693333 124.906667,218.716444 124.906667,216.277333 L124.906667,115.057778 C124.906667,89.8346667 156.821333,78.8906667 172.302222,98.8017778 L220.693333,161.045333 L220.693333,44.1386667 C220.693333,39.2604444 221.148444,35.3137778 216.277333,35.3137778 L44.1386667,35.3137778 Z"
-            fill-opacity="0.4"
+            fillOpacity="0.4"
             fill="url(#linearGradient-2)"
           ></path>
           <path

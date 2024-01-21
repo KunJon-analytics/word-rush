@@ -40,6 +40,19 @@ type ClaimTokens = {
   };
 };
 
+type SubmitTx = {
+  data: {
+    paymentId: string;
+  };
+};
+
+type CompleteTx = {
+  data: {
+    paymentId: string;
+    txid: string;
+  };
+};
+
 type PayClaim = {
   data: {
     round: HuntRound;
@@ -68,6 +81,8 @@ type Events = {
   "users/tokens.claim": ClaimTokens;
   "pots/value.change": ChangePotValue;
   "payments/pay.claim": PayClaim;
+  "payments/tx.submit": SubmitTx;
+  "payments/tx.complete": CompleteTx;
 };
 
 // Create a client to send and receive events
