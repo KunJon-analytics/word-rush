@@ -69,7 +69,7 @@ export const clearIncomplete = inngest.createFunction(
 
           // complete the payment
           const completedPayment = await step.invoke(
-            "complete incomplete payment",
+            "complete-incomplete-payment",
             {
               function: completeTx,
               id: `complete-tx-payment-${paymentId}`,
@@ -82,7 +82,7 @@ export const clearIncomplete = inngest.createFunction(
             function: changePotValue,
             id: `reduce-reward-pot-${round.id}`,
             data: {
-              decrement: amount,
+              decrement: completedPayment.amount,
               name: potsConfig.reward.name,
             },
             user: { uuid: user },

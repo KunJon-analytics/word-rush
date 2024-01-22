@@ -37,6 +37,7 @@ export const getActiveRound = async () => {
       where: { stage: "STARTED" },
       select: { id: true },
     });
+    // USE SEARCH PARAMS TO RELAY MESSAGE
     if (!activeRoundId) {
       return "/dashboard";
     }
@@ -101,7 +102,6 @@ export const getRoundData = async (roundId: string) => {
     }
 
     // send decrease tokens event and update session
-    // send claim event
     await inngest.send({
       name: "users/tokens.change",
       data: {
