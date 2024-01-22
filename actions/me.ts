@@ -127,11 +127,7 @@ export const claim = async (formData: FormData) => {
     return { success: true, message: "Transaction successfully sent!!!" };
   } catch (error) {
     console.log(error);
-    // send incomplete payment event
 
-    await inngest.send({
-      name: "payments/incomplete.clear",
-    });
     return { success: false, message: "Internal Server Error" };
   }
 };
