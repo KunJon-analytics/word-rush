@@ -6,6 +6,8 @@ import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { potsConfig } from "@/config/pot";
 import { getSession } from "./session";
+import { safeParse } from "@/lib/pi";
+import { pi } from "@/lib/pi-client";
 
 export const getMe = async () => {
   const session = await getSession();
@@ -63,11 +65,63 @@ export const claim = async (formData: FormData) => {
       data: { stage: "CLAIMED" },
     });
 
-    // send claim event
-    await inngest.send({
-      name: "users/tokens.claim",
+    const claimAmount = safeParse(rewardPot.value / 24); // the reward pot divided by 24
+
+    // get old payment
+    const oldPayment = await prisma.piTransaction.findFirst({
+      where: { purposeId: claimedRound.id, type: "CLAIM_REWARD" },
+    });
+
+    if (oldPayment?.paymentId) {
+      return { success: false, message: "Payment already started" };
+    }
+
+    if (!claimedRound?.winnerId) {
+      return { success: false, message: "No winner yet for round" };
+    }
+
+    // build Claim Transaction
+    const paymentData = {
+      amount: claimAmount,
+      memo: `reward for Word Rush round`, //
+      metadata: { roundId: claimedRound.id },
+      uid: claimedRound.winnerId,
+    };
+
+    //Send Claim Transaction
+    const paymentId = await pi.createPayment(paymentData);
+
+    // create pitx that will be checked for to prevent double entry
+    const piTx = await prisma.piTransaction.create({
       data: {
-        round: claimedRound,
+        amount: paymentData.amount,
+        paymentId,
+        purposeId: claimedRound.id,
+        type: "CLAIM_REWARD",
+        payerId: claimedRound.winnerId,
+      },
+    });
+
+    // it is strongly recommended that you store the txid along with the paymentId you stored earlier for your reference.
+    // send pay claim event
+    const claimTxId = await pi.submitPayment(piTx.paymentId);
+
+    // update the pitx with the txid
+    const updatedTx = await prisma.piTransaction.update({
+      where: { paymentId: piTx.paymentId },
+      data: { txId: claimTxId, status: "COMPLETED" },
+    });
+
+    // complete the payment
+    const completedPayment = await pi.completePayment(paymentId, claimTxId);
+
+    // send reduce pot event
+    await inngest.send({
+      name: "pots/value.change",
+      id: `reduce-reward-pot-${roundId}`,
+      data: {
+        decrement: completedPayment.amount,
+        name: potsConfig.reward.name,
       },
       user: { uuid: session.uuid },
     });
@@ -75,6 +129,11 @@ export const claim = async (formData: FormData) => {
     return { success: true, message: "Transaction successfully sent!!!" };
   } catch (error) {
     console.log(error);
+    // send incomplete payment event
+
+    await inngest.send({
+      name: "payments/incomplete.clear",
+    });
     return { success: false, message: "Internal Server Error" };
   }
 };

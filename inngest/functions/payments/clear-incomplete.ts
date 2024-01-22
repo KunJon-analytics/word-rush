@@ -11,7 +11,7 @@ import { submitTx } from "./submit-transaction";
 
 export const clearIncomplete = inngest.createFunction(
   { id: "clear-incomplete" },
-  { cron: "5 * * * *" },
+  { event: "payments/incomplete.clear" },
   async ({ step }) => {
     // get incomplete payments
     const incompletePayments = await step.run(

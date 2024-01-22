@@ -83,6 +83,7 @@ type Events = {
   "payments/pay.claim": PayClaim;
   "payments/tx.submit": SubmitTx;
   "payments/tx.complete": CompleteTx;
+  "payments/incomplete.clear": {};
 };
 
 // Create a client to send and receive events
