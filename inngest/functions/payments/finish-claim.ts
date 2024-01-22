@@ -1,6 +1,5 @@
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
-import { completeTx } from "./complete-transaction";
 import { pi } from "@/lib/pi-client";
 
 // Some function we'll call
@@ -9,9 +8,6 @@ export const finishClaim = inngest.createFunction(
   { event: "payments/tx.finish" },
   async ({ event, step }) => {
     const { paymentId } = event.data;
-
-    // Sleep for 1 minute
-    await step.sleep("sleep-before-submit-payment", "30s");
 
     //  submit payment
 
@@ -26,9 +22,6 @@ export const finishClaim = inngest.createFunction(
         data: { txId: claimTxId, status: "COMPLETED" },
       })
     );
-
-    // Sleep for 1 minute
-    await step.sleep("sleep-before-complete-payment", "30s");
 
     // complete the payment
 
