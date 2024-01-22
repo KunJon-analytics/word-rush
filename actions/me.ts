@@ -103,24 +103,22 @@ export const claim = async (formData: FormData) => {
     });
 
     // it is strongly recommended that you store the txid along with the paymentId you stored earlier for your reference.
-    // send pay claim event
-    const claimTxId = await pi.submitPayment(piTx.paymentId);
-
-    // update the pitx with the txid
-    const updatedTx = await prisma.piTransaction.update({
-      where: { paymentId: piTx.paymentId },
-      data: { txId: claimTxId, status: "COMPLETED" },
+    // send finish tx event
+    await inngest.send({
+      name: "payments/tx.finish",
+      id: `finish-claim-tx-${roundId}`,
+      data: {
+        paymentId,
+      },
+      user: { uuid: session.uuid },
     });
-
-    // complete the payment
-    const completedPayment = await pi.completePayment(paymentId, claimTxId);
 
     // send reduce pot event
     await inngest.send({
       name: "pots/value.change",
       id: `reduce-reward-pot-${roundId}`,
       data: {
-        decrement: completedPayment.amount,
+        decrement: piTx.amount,
         name: potsConfig.reward.name,
       },
       user: { uuid: session.uuid },

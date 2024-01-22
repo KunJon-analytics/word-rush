@@ -28,7 +28,7 @@ export async function login(auth: AuthResult) {
   const session = await getSession();
   try {
     // Verify the user's access token with the /me endpoint:
-    const me = await platformAPIClient.get(`/me`, {
+    const me = await platformAPIClient.get(`/v2/me`, {
       headers: { Authorization: `Bearer ${auth.accessToken}` },
     });
   } catch (err) {

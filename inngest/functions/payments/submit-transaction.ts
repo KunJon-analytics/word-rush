@@ -1,5 +1,6 @@
 import { inngest } from "@/inngest/client";
 import { pi } from "@/lib/pi-client";
+import { getPayment } from "@/lib/platformAPIClient";
 
 // Some function we'll call
 export const submitTx = inngest.createFunction(
@@ -7,7 +8,7 @@ export const submitTx = inngest.createFunction(
   { event: "payments/tx.submit" },
   async ({ event }) => {
     const paymentId = event.data.paymentId;
-    const apiTx = await pi.getPayment(paymentId);
+    const { data: apiTx } = await getPayment(paymentId);
     if (apiTx.transaction?.verified) {
       return apiTx.transaction.txid;
     }

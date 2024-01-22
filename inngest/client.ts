@@ -46,6 +46,12 @@ type SubmitTx = {
   };
 };
 
+type FinishClaim = {
+  data: {
+    paymentId: string;
+  };
+};
+
 type CompleteTx = {
   data: {
     paymentId: string;
@@ -84,6 +90,7 @@ type Events = {
   "payments/tx.submit": SubmitTx;
   "payments/tx.complete": CompleteTx;
   "payments/incomplete.clear": {};
+  "payments/tx.finish": FinishClaim;
 };
 
 // Create a client to send and receive events

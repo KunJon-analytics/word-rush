@@ -10,6 +10,7 @@ import { changeTokens } from "@/inngest/functions/users/change-tokens";
 import { submitTx } from "@/inngest/functions/payments/submit-transaction";
 import { completeTx } from "@/inngest/functions/payments/complete-transaction";
 import { clearIncompleteRoutine } from "@/inngest/functions/payments/clear-incomplete-routine";
+import { finishClaim } from "@/inngest/functions/payments/finish-claim";
 
 // Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
@@ -25,5 +26,6 @@ export const { GET, POST, PUT } = serve({
     submitTx,
     completeTx,
     clearIncompleteRoutine,
+    finishClaim,
   ],
 });
