@@ -31,3 +31,5 @@ export const supportCallbacks: PiCallbacks<DonateTx> = {
   onReadyForServerApproval,
   onReadyForServerCompletion,
 };
+
+export const minPiSupport = 0.1;

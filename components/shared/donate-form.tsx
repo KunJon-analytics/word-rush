@@ -16,17 +16,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DonateTx } from "@/types";
-import { supportCallbacks } from "@/lib/support";
+import { minPiSupport, supportCallbacks } from "@/lib/support";
 import { logout } from "@/actions/session";
 import { useToast } from "../ui/use-toast";
 import { Input } from "../ui/input";
 
 const FormSchema = z.object({
   amount: z
-    .number({
-      required_error: "Please input some pi",
-    })
-    .gte(0.1, { message: "minimum support value is 0.1 pi" }),
+    .number({ required_error: "Amount is required" })
+    .positive({ message: "Amount must be positive" })
+    .or(z.string())
+    .pipe(
+      z.coerce
+        .number({ required_error: "Amount is required" })
+        .positive({ message: "Amount must be positive" })
+        .gte(minPiSupport, {
+          message: `Amount must not be less than ${minPiSupport}`,
+        })
+    ),
 });
 
 export function DonateForm({ donor }: { donor: string }) {
