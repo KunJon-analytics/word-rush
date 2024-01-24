@@ -31,4 +31,5 @@ export const { GET, POST, PUT } = serve({
     clearIncompleteRoutine,
     finishClaim,
   ],
+  streaming: "allow",
 });
