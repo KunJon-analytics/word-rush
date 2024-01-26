@@ -110,7 +110,7 @@ export const clearIncomplete = inngest.createFunction(
         );
 
         // it is strongly recommended that you store the txid along with the paymentId you stored earlier for your reference.
-        const claimTxId = await step.invoke("submit payment", {
+        const claimTxId = await step.invoke("submit-payment", {
           function: submitTx,
           id: `submit-tx-payment-${piTransaction.paymentId}`,
           data: { paymentId: piTransaction.paymentId },

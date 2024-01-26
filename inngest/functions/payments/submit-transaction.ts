@@ -6,12 +6,17 @@ import { getPayment } from "@/lib/platformAPIClient";
 export const submitTx = inngest.createFunction(
   { id: "submit-transaction" },
   { event: "payments/tx.submit" },
-  async ({ event }) => {
-    const paymentId = event.data.paymentId;
+  async ({ event, step }) => {
+    const { paymentId } = event.data;
+
+    await step.sleep("wait-for-20-secs", "20s");
+
     const { data: apiTx } = await getPayment(paymentId);
-    if (apiTx.transaction?.verified) {
+
+    if (apiTx.transaction?.txid) {
       return apiTx.transaction.txid;
     }
+
     return pi.submitPayment(paymentId);
   }
 );

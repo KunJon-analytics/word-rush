@@ -1,6 +1,7 @@
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { pi } from "@/lib/pi-client";
+import { submitTx } from "./submit-transaction";
 
 // Some function we'll call
 export const finishClaim = inngest.createFunction(
@@ -11,9 +12,10 @@ export const finishClaim = inngest.createFunction(
 
     //  submit payment
 
-    const claimTxId = await step.run("submit-claim-payment", () =>
-      pi.submitPayment(paymentId)
-    );
+    const claimTxId = await step.invoke("submit-claim-payment", {
+      function: submitTx,
+      data: { paymentId }, // input data is typed, requiring input if it's needed
+    });
 
     // update the pitx with the txid
     await step.run("update-pi-transaction-completed", () =>

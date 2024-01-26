@@ -14,6 +14,7 @@ export const env = createEnv({
     // Pi
     PI_SECRET_KEY: z.string().min(1),
     PI_API_KEY: z.string().min(1),
+    WORDNIK_API_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().min(1),
@@ -33,5 +34,6 @@ export const env = createEnv({
     PI_SECRET_KEY: process.env.PI_SECRET_KEY,
     PI_API_KEY: process.env.PI_API_KEY,
     NEXT_PUBLIC_PI_SANDBOX: process.env.NEXT_PUBLIC_PI_SANDBOX,
+    WORDNIK_API_KEY: process.env.WORDNIK_API_KEY,
   },
 });

@@ -12,9 +12,6 @@ import { completeTx } from "@/inngest/functions/payments/complete-transaction";
 import { clearIncompleteRoutine } from "@/inngest/functions/payments/clear-incomplete-routine";
 import { finishClaim } from "@/inngest/functions/payments/finish-claim";
 
-export const runtime =
-  process.env.NODE_ENV === "production" ? "edge" : "nodejs";
-
 // Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -31,5 +28,4 @@ export const { GET, POST, PUT } = serve({
     clearIncompleteRoutine,
     finishClaim,
   ],
-  streaming: "allow",
 });
