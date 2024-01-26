@@ -13,7 +13,7 @@ export const submitTx = inngest.createFunction(
 
     const { data: apiTx } = await getPayment(paymentId);
 
-    if (apiTx.transaction?.txid) {
+    if (!!apiTx.transaction?.txid) {
       return apiTx.transaction.txid;
     }
 
