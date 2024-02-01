@@ -1,7 +1,7 @@
 import { NonRetriableError } from "inngest";
 
 import { inngest } from "@/inngest/client";
-import { finishPiTransaction } from "./finish-pi-transaction";
+import { finishPiTransaction } from "../aws/finish-pi-transaction";
 
 // Some function we'll call
 export const finishClaim = inngest.createFunction(

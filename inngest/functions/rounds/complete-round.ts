@@ -1,8 +1,8 @@
 import { NonRetriableError } from "inngest";
 
-import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { pointsConfig } from "@/lib/wordle";
+import prismaEdge from "@/lib/prisma-edge";
 import { changePoints } from "../users/change-points";
 
 export const completeRound = inngest.createFunction(
@@ -16,7 +16,7 @@ export const completeRound = inngest.createFunction(
     try {
       // get round
       const round = await step.run("get-round-to-complete", () =>
-        prisma.huntRound.findUnique({
+        prismaEdge.huntRound.findUnique({
           where: { id: roundId, winnerId: uuid },
           include: { winner: true },
         })
@@ -29,18 +29,18 @@ export const completeRound = inngest.createFunction(
       }
       // check for queued tx or existing started tx
       const queuedRound = await step.run("get-queued-round", () =>
-        prisma.huntRound.findFirst({
+        prismaEdge.huntRound.findFirst({
           where: { stage: "QUEUED" },
         })
       );
       const started = await step.run("get-started-round", () =>
-        prisma.huntRound.findFirst({
+        prismaEdge.huntRound.findFirst({
           where: { stage: "STARTED" },
         })
       );
 
       if (queuedRound && !started) {
-        await prisma.huntRound.update({
+        await prismaEdge.huntRound.update({
           where: { id: queuedRound.id },
           data: { stage: "STARTED" },
         });

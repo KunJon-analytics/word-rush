@@ -1,12 +1,12 @@
 import { inngest } from "@/inngest/client";
-import prisma from "@/lib/prisma";
 import { HuntRound } from "@prisma/client";
 import { env } from "@/env.mjs";
+import prismaEdge from "@/lib/prisma-edge";
 
 export const createRound = inngest.createFunction(
   { id: "round-create" },
   { cron: "0 * * * *" },
-  async ({ event, step }) => {
+  async () => {
     try {
       const wordnikApiUrl = `https://api.wordnik.com/v4/words.json/randomWord?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=5&api_key=${env.WORDNIK_API_KEY}`;
 
@@ -22,15 +22,15 @@ export const createRound = inngest.createFunction(
       const { word } = await res.json();
 
       let round: HuntRound;
-      const activeRound = await prisma.huntRound.findFirst({
+      const activeRound = await prismaEdge.huntRound.findFirst({
         where: { stage: "STARTED" },
       });
       if (activeRound) {
-        round = await prisma.huntRound.create({
+        round = await prismaEdge.huntRound.create({
           data: { word, stage: "QUEUED" },
         });
       } else {
-        round = await prisma.huntRound.create({
+        round = await prismaEdge.huntRound.create({
           data: { word, stage: "STARTED" },
         });
       }

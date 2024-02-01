@@ -1,14 +1,14 @@
 import { inngest } from "@/inngest/client";
-import { clearIncomplete } from "./clear-incomplete";
+
+import { clearIncomplete } from "../aws/clear-incomplete";
 
 // Some function we'll call
 export const clearIncompleteRoutine = inngest.createFunction(
   { id: "clear-incomplete-routine" },
   { cron: "5 * * * *" },
-  async ({ event, step }) => {
+  async ({ step }) => {
     return await step.invoke("clear all incomplete payments", {
       function: clearIncomplete,
-      id: `clear-incomplete-payment-${Date.now()}`,
     });
   }
 );

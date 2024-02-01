@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
+import prismaEdge from "@/lib/prisma-edge";
 
 export const changeTokens = inngest.createFunction(
   { id: "change-tokens" },
@@ -12,7 +12,7 @@ export const changeTokens = inngest.createFunction(
 
     try {
       // update point change to event..
-      const user = await prisma.user.update({
+      const user = await prismaEdge.user.update({
         where: { uuid },
         data: { tokens: { increment, decrement } },
         select: { tokens: true, username: true },

@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
+import prismaEdge from "@/lib/prisma-edge";
 
 export const changePotValue = inngest.createFunction(
   { id: "change-pot-value" },
@@ -13,7 +13,7 @@ export const changePotValue = inngest.createFunction(
     try {
       // update pot value to event..
 
-      const pot = await prisma.pot.upsert({
+      const pot = await prismaEdge.pot.upsert({
         where: { name },
         update: { value: { increment, decrement } },
         select: { name: true, value: true },
