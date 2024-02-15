@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 
 import { Providers } from "@/components/providers";
 import { fontHeading, fontSans, fontUrban } from "@/assets/fonts";
